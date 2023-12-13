@@ -35,9 +35,9 @@ class ProductManager {
     await this.guardarDocumento(this.products);
   }
 
-  getProducts = () => {
+  async getProducts() {
     console.log(this.products);
-  };
+  }
 
   async getProductById(id) {
     try {
@@ -72,6 +72,8 @@ class ProductManager {
     try {
       const arrayProductos = await this.leerDocumento();
 
+      console.log("Antes de la eliminación:", arrayProductos);
+
       const indiceProductoBuscado = arrayProductos.findIndex(
         (item) => item.id === id
       );
@@ -79,14 +81,23 @@ class ProductManager {
       if (indiceProductoBuscado === -1) {
         console.log("No se encontró el producto");
       } else {
+        console.log("ID a eliminar:", id);
+        console.log(
+          "Producto encontrado:",
+          arrayProductos[indiceProductoBuscado]
+        );
+
         arrayProductos.splice(indiceProductoBuscado, 1);
 
+        console.log("Después de la eliminación:", arrayProductos);
+
         await this.guardarDocumento(arrayProductos);
+        console.log("Después de guardar:", arrayProductos);
 
         console.log("Producto eliminado correctamente");
       }
     } catch (error) {
-      console.log("No se pudo borrar el producto", error);
+      console.error("No se pudo borrar el producto", error);
     }
   }
 
@@ -94,6 +105,7 @@ class ProductManager {
     try {
       const res = await fs.readFile(this.path, "utf-8");
       const arrayProductos = JSON.parse(res);
+
       return arrayProductos;
     } catch (error) {
       console.log("No se puede leer el archivo");
@@ -102,7 +114,7 @@ class ProductManager {
 
   async guardarDocumento(arrayProductos) {
     try {
-      await fs.writeFile(this.path, JSON.stringify(arrayProductos));
+      await fs.writeFile(this.path, JSON.stringify(arrayProductos, null, 2));
     } catch (error) {
       console.log("No se puede guardar el documento");
     }
@@ -117,7 +129,7 @@ const manager = new ProductManager("./productos.json");
 
 // Se llamará “getProducts” recién creada la instancia, debe devolver un arreglo vacío []
 
-manager.getProducts();
+// manager.getProducts();
 
 // Se llamará al método “addProduct” con los campos:
 // title: “producto prueba”
@@ -127,53 +139,59 @@ manager.getProducts();
 // code:”abc123”,
 // stock:25
 
-const productoPrueba = {
-  title: "producto prueba",
-  description: "Este es un producto prueba",
-  price: 200,
-  thumbnail: "Sin imagen",
-  code: "abc123",
-  stock: 25,
-};
-manager.addProduct(productoPrueba);
+// const productoPrueba = {
+//   title: "producto prueba",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc123",
+//   stock: 25,
+// };
+// manager.addProduct(productoPrueba);
 
 // El objeto debe agregarse satisfactoriamente con un id generado automáticamente SIN REPETIRSE
 
-const productoPruebaDos = {
-  title: "producto prueba",
-  description: "Este es un producto prueba",
-  price: 200,
-  thumbnail: "Sin imagen",
-  code: "abc122",
-  stock: 26,
-};
-manager.addProduct(productoPruebaDos);
+// const productoPruebaDos = {
+//   title: "producto prueba",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc122",
+//   stock: 26,
+// };
+// manager.addProduct(productoPruebaDos);
 
 // // Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado
-manager.getProducts();
+// manager.getProducts();
 
 // Se llamará al método “getProductById” y se corroborará que devuelva el producto con el id especificado, en caso de no existir, debe arrojar un error.
 
-manager.getProductById(1);
-manager.getProductById(3);
+// async function testeamosBusqueda(id) {
+//   const buscado = await manager.getProductById(id);
+// }
+
+// testeamosBusqueda(1);
+// testeamosBusqueda(3);
 
 // Se llamará al método “updateProduct” y se intentará cambiar un campo de algún producto o el objeto completo, se evaluará que no se elimine el id y que sí se haya hecho la actualización.
 
-const productoPruebaTres = {
-  id: 1,
-  title: "producto prueba tres",
-  description: "Este es un producto prueba",
-  price: 200,
-  thumbnail: "Sin imagen",
-  code: "abc125",
-  stock: 26,
-};
-async function testeamosActualizar() {
-  await manager.updateProduct(1, productoPruebaTres);
-}
-
-testeamosActualizar();
+// const productoPruebaTres = {
+//   id: 1,
+//   title: "producto prueba tres",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc125",
+//   stock: 26,
+// };
+// async function testeamosActualizar() {
+//   await manager.updateProduct(1, productoPruebaTres);
+// }
+// testeamosActualizar();
 
 // Se llamará al método “deleteProduct”, se evaluará que realmente se elimine el producto o que arroje un error en caso de no existir.
 
-manager.deleteProduct(1);
+async function testeamosBorrar(numero) {
+  await manager.deleteProduct(numero);
+}
+// testeamosBorrar(1);
