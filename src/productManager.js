@@ -36,7 +36,12 @@ class ProductManager {
   }
 
   async getProducts() {
-    console.log(this.products);
+    try {
+      const arrayProductos = await this.leerDocumento();
+      return arrayProductos;
+    } catch (error) {
+      console.log("Error al obtener los productos", error);
+    }
   }
 
   async getProductById(id) {
@@ -121,12 +126,14 @@ class ProductManager {
   }
 }
 
+module.exports = ProductManager;
+
 // Testing:
 
 // Se creará una instancia de la clase “ProductManager”
 
-const manager = new ProductManager("./productos.json");
-
+// const manager = new ProductManager("./src/products.json");
+//
 // Se llamará “getProducts” recién creada la instancia, debe devolver un arreglo vacío []
 
 // manager.getProducts();
@@ -156,14 +163,87 @@ const manager = new ProductManager("./productos.json");
 //   description: "Este es un producto prueba",
 //   price: 200,
 //   thumbnail: "Sin imagen",
-//   code: "abc122",
+//   code: "abc124",
 //   stock: 26,
 // };
+// const productoPruebaTres = {
+//   title: "producto prueba",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc125",
+//   stock: 26,
+// };
+// const productoPruebaCuatro = {
+//   title: "producto prueba",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc126",
+//   stock: 26,
+// };
+// const productoPruebaCinco = {
+//   title: "producto prueba",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc127",
+//   stock: 26,
+// };
+// const productoPruebaSeis = {
+//   title: "producto prueba",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc128",
+//   stock: 26,
+// };
+// const productoPruebaSiete = {
+//   title: "producto prueba",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc129",
+//   stock: 26,
+// };
+// const productoPruebaOcho = {
+//   title: "producto prueba",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc130",
+//   stock: 26,
+// };
+// const productoPruebaNueve = {
+//   title: "producto prueba",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc1231",
+//   stock: 26,
+// };
+// const productoPruebaDiez = {
+//   title: "producto prueba",
+//   description: "Este es un producto prueba",
+//   price: 200,
+//   thumbnail: "Sin imagen",
+//   code: "abc132",
+//   stock: 26,
+// };
+// manager.addProduct(productoPrueba);
 // manager.addProduct(productoPruebaDos);
+// manager.addProduct(productoPruebaTres);
+// manager.addProduct(productoPruebaCuatro);
+// manager.addProduct(productoPruebaCinco);
+// manager.addProduct(productoPruebaSeis);
+// manager.addProduct(productoPruebaSiete);
+// manager.addProduct(productoPruebaOcho);
+// manager.addProduct(productoPruebaNueve);
+// manager.addProduct(productoPruebaDiez);
 
 // // Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado
 // manager.getProducts();
-
+//
 // Se llamará al método “getProductById” y se corroborará que devuelva el producto con el id especificado, en caso de no existir, debe arrojar un error.
 
 // async function testeamosBusqueda(id) {
@@ -191,7 +271,7 @@ const manager = new ProductManager("./productos.json");
 
 // Se llamará al método “deleteProduct”, se evaluará que realmente se elimine el producto o que arroje un error en caso de no existir.
 
-async function testeamosBorrar(numero) {
-  await manager.deleteProduct(numero);
-}
+// async function testeamosBorrar(numero) {
+//   await manager.deleteProduct(numero);
+// }
 // testeamosBorrar(1);
