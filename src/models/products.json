@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "title": "Tomate",
+    "description": "Este es un producto prueba",
+    "price": "200",
+    "thumbnail": "Sin imagen",
+    "code": "abc13",
+    "stock": "26",
+    "status": "true",
+    "category": "comida"
+  },
+  {
+    "id": 2,
+    "title": "Cebolla",
+    "description": "Este es un producto prueba",
+    "price": "200",
+    "thumbnail": "Sin imagen",
+    "code": "abc131",
+    "stock": "26",
+    "status": "true",
+    "category": "comida"
+  },
+  {
+    "id": "3",
+    "title": "Manzana",
+    "description": "Este es un producto prueba para actualizar",
+    "price": "200",
+    "thumbnail": "Sin imagen",
+    "code": "abc13",
+    "stock": "26",
+    "status": "true",
+    "category": "none"
+  },
+  {
+    "id": 4,
+    "title": "Papa",
+    "description": "Este es un producto prueba",
+    "price": "200",
+    "thumbnail": "Sin imagen",
+    "code": "abc134",
+    "stock": "26",
+    "status": "true",
+    "category": "comida"
+  },
+  {
+    "id": 5,
+    "title": "Brocolí",
+    "description": "Este es un producto prueba",
+    "price": "200",
+    "thumbnail": "Sin imagen",
+    "code": "abc135",
+    "stock": "26",
+    "status": "true",
+    "category": "comida"
+  },
+  {
+    "id": 6,
+    "title": "Zanahoria",
+    "description": "Este es un producto prueba",
+    "price": "200",
+    "thumbnail": "Sin imagen",
+    "code": "abc139",
+    "stock": "26",
+    "status": "true",
+    "category": "comida"
+  },
+  {
+    "id": 7,
+    "title": "Espinaca",
+    "description": "Este es un producto prueba",
+    "price": "200",
+    "thumbnail": "Sin imagen",
+    "code": "abc178",
+    "stock": "26",
+    "status": "true",
+    "category": "comida"
+  },
+  {
+    "id": 8,
+    "title": "Lechuga",
+    "description": "Este es un producto prueba",
+    "price": "200",
+    "thumbnail": "Sin imagen",
+    "code": "abc179",
+    "stock": "26",
+    "status": "true",
+    "category": "comida"
+  },
+  {
+    "id": 9,
+    "title": "Cilantro",
+    "description": "Este es un producto prueba",
+    "price": "200",
+    "thumbnail": "Sin imagen",
+    "code": "abc119",
+    "stock": "26",
+    "status": "true",
+    "category": "comida"
+  },
+  {
+    "id": 10,
+    "title": "Ejotes",
+    "description": "Este es un producto prueba",
+    "price": "200",
+    "thumbnail": "Sin imagen",
+    "code": "abc109",
+    "stock": "26",
+    "status": "true",
+    "category": "comida"
+  }
+]

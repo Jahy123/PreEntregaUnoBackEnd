@@ -5,123 +5,153 @@ class ProductManager {
   constructor(path) {
     this.products = [];
     this.path = path;
+    this.loadLastId();
   }
-
+  async loadLastId() {
+    try {
+      const listProducts = await this.readFile();
+      if (listProducts.length > 0) {
+        const lastProduct = listProducts[listProducts.length - 1];
+        ProductManager.id = lastProduct.id;
+      }
+    } catch (error) {
+      throw new Error("error loading last id");
+    }
+  }
   async addProduct(objeto) {
-    let { title, description, price, thumbnail, code, stock } = objeto;
+    try {
+      const existingProducts = await this.readFile();
 
-    if (!title || !description || !price || !thumbnail || !code || !stock) {
-      console.log("Asegurate de completar todos los campos");
-      return;
+      let {
+        title,
+        description,
+        price,
+        thumbnail,
+        code,
+        stock,
+        status,
+        category,
+      } = objeto;
+
+      if (
+        !title ||
+        !description ||
+        !price ||
+        !thumbnail ||
+        !code ||
+        !stock ||
+        !status ||
+        !category
+      ) {
+        throw new Error("Complete all fields");
+      }
+
+      if (existingProducts.find((product) => product.code === code)) {
+        throw new Error("The value of code already exists");
+      }
+      ProductManager.id++;
+      const product = {
+        id: ProductManager.id,
+        title,
+        description,
+        price,
+        thumbnail,
+        code,
+        stock,
+        status,
+        category,
+      };
+      existingProducts.push(product);
+      await this.saveFile(existingProducts);
+    } catch (error) {
+      console.error("Error in addProduct:", error);
+      throw new Error(
+        `Error when adding the product. Initial error: ${error.message}`
+      );
     }
-
-    if (this.products.find((product) => product.code === code)) {
-      console.log("El valor de code ya existe");
-      return;
-    }
-
-    const product = {
-      id: ++ProductManager.id,
-      title,
-      description,
-      price,
-      thumbnail,
-      code,
-      stock,
-    };
-
-    this.products.push(product);
-
-    await this.guardarDocumento(this.products);
   }
 
   async getProducts() {
     try {
-      const arrayProductos = await this.leerDocumento();
-      return arrayProductos;
+      let listProducts = await this.readFile();
+      const result = !listProducts ? this.products : listProducts;
+      return result;
     } catch (error) {
-      console.log("Error al obtener los productos", error);
+      throw new Error("Product not found");
     }
   }
 
   async getProductById(id) {
     try {
-      let arrayProductos = await this.leerDocumento();
-      const productoBuscado = arrayProductos.find((item) => item.id === id);
+      let listProducts = await this.readFile();
+      const findProduct = listProducts.find((item) => item.id == id);
 
-      !productoBuscado
-        ? console.log("No se encontró el producto")
-        : console.log("Producto encontrado:", productoBuscado);
+      if (!findProduct) {
+        throw new Error("Product was not found");
+      } else {
+        console.log("Producto encontrado:", findProduct);
+      }
     } catch (error) {
-      console.log("Error al leer el archivo", error);
+      throw new Error("Error getting product");
     }
   }
 
-  async updateProduct(id, productoActualizado) {
+  async updateProduct(id, updateProduct) {
     try {
-      const arrayProductos = await this.leerDocumento();
+      this.products = await this.readFile();
 
-      const index = arrayProductos.findIndex((item) => item.id === id);
+      const index = this.products.findIndex((item) => item.id == id);
 
       if (index !== -1) {
-        arrayProductos.splice(index, 1, productoActualizado);
-        await this.guardarDocumento(arrayProductos);
+        const updatedProduct = { id, ...updateProduct };
+        this.products.splice(index, 1, updatedProduct);
+        await this.saveFile(this.products);
       } else {
-        console.log("No se encontró el producto");
+        throw new Error("Product not found");
       }
     } catch (error) {
-      console.log("Error al actualizar el producto", error);
+      throw new Error("Error updating product");
     }
   }
+
   async deleteProduct(id) {
     try {
-      const arrayProductos = await this.leerDocumento();
+      const listProducts = await this.readFile();
 
-      console.log("Antes de la eliminación:", arrayProductos);
+      const index = listProducts.findIndex((item) => item.id == id);
 
-      const indiceProductoBuscado = arrayProductos.findIndex(
-        (item) => item.id === id
-      );
-
-      if (indiceProductoBuscado === -1) {
-        console.log("No se encontró el producto");
-      } else {
-        console.log("ID a eliminar:", id);
-        console.log(
-          "Producto encontrado:",
-          arrayProductos[indiceProductoBuscado]
-        );
-
-        arrayProductos.splice(indiceProductoBuscado, 1);
-
-        console.log("Después de la eliminación:", arrayProductos);
-
-        await this.guardarDocumento(arrayProductos);
-        console.log("Después de guardar:", arrayProductos);
-
-        console.log("Producto eliminado correctamente");
+      if (index == -1) {
+        throw new Error("Product not found");
       }
+      console.log("ID a eliminar:", id);
+      console.log("Producto encontrado:", listProducts[index]);
+
+      listProducts.splice(index, 1);
+
+      await this.saveFile(listProducts);
+
+      console.log("Product deleted");
     } catch (error) {
-      console.error("No se pudo borrar el producto", error);
+      throw new Error("Error deleting product");
     }
   }
 
-  async leerDocumento() {
+  async readFile() {
     try {
       const res = await fs.readFile(this.path, "utf-8");
-      const arrayProductos = JSON.parse(res);
+      const listProducts = JSON.parse(res);
 
-      return arrayProductos;
+      return listProducts;
     } catch (error) {
-      console.log("No se puede leer el archivo");
+      throw "Failed to read file";
     }
   }
 
-  async guardarDocumento(arrayProductos) {
+  async saveFile(listProducts) {
     try {
-      await fs.writeFile(this.path, JSON.stringify(arrayProductos, null, 2));
+      await fs.writeFile(this.path, JSON.stringify(listProducts, null, 2));
     } catch (error) {
-      console.log("No se puede guardar el documento");
+      throw "Failed to save file";
     }
   }
 }
