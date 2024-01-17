@@ -59,9 +59,24 @@ router.get("/:pid", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const object = req.body;
-    await manager.addProduct(object);
+    const { title, description, price, code, stock, status, category } =
+      req.body;
 
-    res.send({ status: "success", message: "Add new product" });
+    if (
+      !title ||
+      !description ||
+      !price ||
+      !code ||
+      !stock ||
+      !status ||
+      !category
+    ) {
+      return res.send({ status: "success", message: "Complete all fields" });
+    } else {
+      await manager.addProduct(object);
+
+      res.send({ status: "success", message: "Add new product" });
+    }
   } catch (error) {
     res.status(400).send({ status: "error", message: error.message });
   }

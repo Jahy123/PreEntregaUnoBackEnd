@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const ProductManagerCart = require("../controllers/productManagerCart");
-const manager = new ProductManagerCart("./src/models/cart.json");
+const CartManager = require("../controllers/cartManager");
+const manager = new CartManager("./src/models/cart.json");
 
 router.use(express.json());
 module.exports = router;
@@ -12,8 +12,7 @@ module.exports = router;
 
 router.post("/", async (req, res) => {
   try {
-    const object = req.body;
-    await manager.addCart(object);
+    await manager.addCart();
 
     res.send({ status: "success", message: "Add new cart" });
   } catch (error) {
@@ -32,7 +31,7 @@ router.get("/:cid", async (req, res) => {
     if (cart) {
       res.send(cart);
     } else {
-      res.status(400).send({ status: "error", message: error.message });
+      res.status(400).send({ status: "error", message: "Cart not found" });
     }
   } catch (error) {
     res.status(400).send({ status: "error", message: error.message });

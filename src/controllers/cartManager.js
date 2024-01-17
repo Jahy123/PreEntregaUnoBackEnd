@@ -1,8 +1,6 @@
-const { log } = require("console");
-
 const fs = require("fs").promises;
 
-class ProductManagerCart {
+class CartManager {
   static id = 0;
   constructor(path) {
     this.carts = [];
@@ -14,7 +12,7 @@ class ProductManagerCart {
       const listCarts = await this.readFile();
       if (listCarts.length > 0) {
         const lastCart = listCarts[listCarts.length - 1];
-        ProductManagerCart.id = lastCart.id;
+        CartManager.id = lastCart.id;
       }
     } catch (error) {
       throw new Error("Error loading last id");
@@ -24,16 +22,10 @@ class ProductManagerCart {
     try {
       const existingCarts = await this.readFile();
 
-      let { products } = objeto;
-
-      if (!products) {
-        throw new Error("Complete all fields");
-      }
-
-      ProductManagerCart.id++;
+      CartManager.id++;
       const cart = {
-        id: ProductManagerCart.id,
-        products,
+        id: CartManager.id,
+        products: [],
       };
       existingCarts.push(cart);
       await this.saveFile(existingCarts);
@@ -48,7 +40,7 @@ class ProductManagerCart {
       const findCart = listCarts.find((item) => item.id == id);
 
       if (!findCart) {
-        throw new Error("Cart not found");
+        console.log("Cart not found");
       } else {
         return findCart.products;
       }
@@ -116,4 +108,4 @@ class ProductManagerCart {
   }
 }
 
-module.exports = ProductManagerCart;
+module.exports = CartManager;
