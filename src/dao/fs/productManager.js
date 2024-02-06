@@ -15,7 +15,7 @@ class ProductManager {
         ProductManager.id = lastProduct.id;
       }
     } catch (error) {
-      throw new Error("error loading last id");
+      console.log("error loading last id");
     }
   }
   async addProduct(objeto) {

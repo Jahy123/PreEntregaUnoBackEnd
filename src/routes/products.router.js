@@ -1,112 +1,93 @@
 const express = require("express");
 const router = express.Router();
-const ProductManager = require("../controllers/productManager");
-const manager = new ProductManager("./src/models/products.json");
 
-router.use(express.json());
+const ProductManager = require("../dao/db/product_manager_db.js");
+const productManager = new ProductManager();
 
-// ----------------------------------------------------------------
-// La ruta raíz GET / deberá listar todos los productos de la base. (Incluyendo la limitación ?limit del desafío anterior
 router.get("/", async (req, res) => {
   try {
-    if (req.query.limit) {
-      let limit = parseInt(req.query.limit);
-
-      const products = await manager.getProducts();
-
-      const limitProducts = products.slice(0, limit);
-
-      res.send(limitProducts);
+    const limit = req.query.limit;
+    const products = await productManager.getProducts();
+    if (limit) {
+      res.json(products.slice(0, limit));
     } else {
-      let products = await manager.getProducts();
-      res.send(products);
+      res.json(products);
     }
   } catch (error) {
-    res.status(400).send({ status: "error", message: error });
+    console.error("Error al obtener productos", error);
+    res.status(500).json({
+      error: "Error interno del servidor",
+    });
   }
 });
-// -------------------------------------------------------------------------------
-// La ruta GET /:pid deberá traer sólo el producto con el id proporcionado
+
 router.get("/:pid", async (req, res) => {
+  const id = req.params.pid;
+
   try {
-    let id = req.params.pid;
-    const products = await manager.getProducts();
-    const product = products.find((product) => product.id == id);
-    if (product) {
-      res.send(product);
-    } else {
-      res.status(404).send({ status: "error", message: "Product not found" });
+    const product = await productManager.getProductById(id);
+    if (!product) {
+      return res.json({
+        error: "Producto no encontrado",
+      });
     }
+
+    res.json(product);
   } catch (error) {
-    res.status(400).send({ status: "error", message: error.message });
+    console.error("Error al obtener product", error);
+    res.status(500).json({
+      error: "Error interno del servidor",
+    });
   }
 });
-
-// -----------------------------------------------------
-// La ruta raíz POST / deberá agregar un nuevo producto con los campos:
-// id: Number/String (A tu elección, el id NO se manda desde body, se autogenera como lo hemos visto desde los primeros entregables, asegurando que NUNCA se repetirán los ids en el archivo.
-//   title:String,
-//   description:String
-//   code:String
-//   price:Number
-//   status:Boolean
-//   stock:Number
-//   category:String
-//   thumbnails:Array de Strings que contenga las rutas donde están almacenadas las imágenes referentes a dicho producto
-//   Status es true por defecto.
-//   Todos los campos son obligatorios, a excepción de thumbnails
 
 router.post("/", async (req, res) => {
+  const newProduct = req.body;
+
   try {
-    const object = req.body;
-    const { title, description, price, code, stock, status, category } =
-      req.body;
-
-    if (
-      !title ||
-      !description ||
-      !price ||
-      !code ||
-      !stock ||
-      !status ||
-      !category
-    ) {
-      return res.send({ status: "success", message: "Complete all fields" });
-    } else {
-      await manager.addProduct(object);
-
-      res.send({ status: "success", message: "Add new product" });
-    }
+    await productManager.addProduct(newProduct);
+    res.status(201).json({
+      message: "Producto agregado exitosamente",
+    });
   } catch (error) {
-    res.status(400).send({ status: "error", message: error.message });
+    console.error("Error al agregar producto", error);
+    res.status(500).json({
+      error: "Error interno del servidor",
+    });
   }
 });
-
-// --------------------------------------------------------
-//La ruta PUT /:pid deberá tomar un producto y actualizarlo por los campos enviados desde body. NUNCA se debe actualizar o eliminar el id al momento de hacer dicha actualización.
 router.put("/:pid", async (req, res) => {
-  try {
-    const id = req.params.pid;
-    const newProduct = req.body;
-    const updateProduct = await manager.updateProduct(id, newProduct);
+  const id = req.params.pid;
+  const product = req.body;
 
-    res.send({ status: "success", message: "Update product" });
+  try {
+    await productManager.updateProduct(id, product);
+    res.json({
+      message: "Producto actualizado exitosamente",
+    });
   } catch (error) {
-    res.status(400).send({ status: "error", message: error.message });
+    console.error("Error al actualizar producto", error);
+    res.status(500).json({
+      error: "Error interno del servidor",
+    });
   }
 });
-// ----------------------------------------------------------------------------------
-// La ruta DELETE /:pid deberá eliminar el producto con el pid indicado.
+
+//5) Eliminar producto:
 
 router.delete("/:pid", async (req, res) => {
+  const id = req.params.pid;
+
   try {
-    const id = req.params.pid;
-
-    const deleteProduct = await manager.deleteProduct(id);
-
-    res.send({ status: "success", message: "Delete product" });
+    await productManager.deleteProduct(id);
+    res.json({
+      message: "Producto eliminado exitosamente",
+    });
   } catch (error) {
-    res.status(400).send({ status: "error", message: error.message });
+    console.error("Error al eliminar producto", error);
+    res.status(500).json({
+      error: "Error interno del servidor",
+    });
   }
 });
 

@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const CartManager = require("../controllers/cartManager");
-const manager = new CartManager("./src/models/cart.json");
+const CartManager = require("../dao/db/cart_manager_db.js");
+const manager = new CartManager();
 
 router.use(express.json());
-module.exports = router;
+
 // ----------------------------------------------------------
 // La ruta raíz POST / deberá crear un nuevo carrito con la siguiente estructura:
 // Id:Number/String (A tu elección, de igual manera como con los productos, debes asegurar que nunca se dupliquen los ids y que este se autogenere).
@@ -12,11 +12,11 @@ module.exports = router;
 
 router.post("/", async (req, res) => {
   try {
-    await manager.addCart();
-
-    res.send({ status: "success", message: "Add new cart" });
+    const newCart = await manager.addCart();
+    res.json(newCart);
   } catch (error) {
-    res.status(400).send({ status: "error", message: error.message });
+    console.error("Error al crear un nuevo carrito", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
@@ -47,11 +47,14 @@ router.get("/:cid", async (req, res) => {
 
 router.post("/:cid/product/:pid", async (req, res) => {
   try {
-    const idProduct = req.params.pid;
-    const idCart = req.params.cid;
-    const cart = await manager.addProductToCart(idProduct, idCart);
+    const productId = req.params.pid;
+    const cartId = req.params.cid;
+    const quantity = req.body.quantity || 1;
+    const cart = await manager.addProductToCart(productId, cartId, quantity);
     res.send({ status: "success", message: "Product adeded to cart" });
   } catch (error) {
     res.status(400).send({ status: "error", message: error.message });
   }
 });
+
+module.exports = router;
