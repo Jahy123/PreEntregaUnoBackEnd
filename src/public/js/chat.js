@@ -1,13 +1,14 @@
-console.log("Funciona el archivo de public js");
 const socket = io();
+
 let user;
 const chatBox = document.getElementById("chatBox");
+
 Swal.fire({
-  title: "Identificate",
+  title: "Identíficate",
   input: "text",
-  text: "Ingresa un usuario para identificarte en el chat",
+  text: "Ingresa un usuario",
   inputValidator: (value) => {
-    return !value && "Necesitas escribir un nombre para continuar";
+    return !value && "Escribe un nombre para continuar";
   },
   allowOutsideClick: false,
 }).then((result) => {
@@ -23,7 +24,7 @@ chatBox.addEventListener("keyup", (event) => {
   }
 });
 
-socket.on("messagesLogs", (data) => {
+socket.on("message", (data) => {
   let log = document.getElementById("messagesLogs");
   let messages = "";
 
@@ -33,5 +34,3 @@ socket.on("messagesLogs", (data) => {
 
   log.innerHTML = messages;
 });
-
-module.exports = user;
