@@ -12,18 +12,6 @@ class ProductManager {
     thumbnails,
   }) {
     try {
-      if (!title || !description || !price || !code || !stock || !category) {
-        console.log("Todos los campos son obligatorios");
-        return;
-      }
-
-      const product = await ProductModel.findOne({ code: code });
-
-      if (product) {
-        console.log("El código debe ser único, malditooo!!!");
-        return;
-      }
-
       const newProduct = new ProductModel({
         title,
         description,
@@ -43,9 +31,28 @@ class ProductManager {
     }
   }
 
-  async getProducts() {
+  async getProducts(limit, page, sort, query, category, status) {
     try {
-      const products = await ProductModel.find();
+      const filter = {};
+
+      if (query) {
+        filter.$text = { $search: query };
+      }
+
+      if (category) {
+        filter.category = category;
+      }
+
+      if (status) {
+        filter.status = status;
+      }
+
+      // Realizar la consulta con los parámetros proporcionados
+      const products = await ProductModel.find(filter)
+        .limit(limit)
+        .skip((page - 1) * limit)
+        .sort(sort)
+        .exec();
       return products;
     } catch (error) {
       console.log("Error al obtener los productos", error);
@@ -77,7 +84,7 @@ class ProductManager {
         return null;
       }
 
-      console.log("Producto actualizado con exito!");
+      console.log("Producto actualizado con exito");
       return product;
     } catch (error) {
       console.log("Error al actualizar el producto", error);
@@ -88,14 +95,11 @@ class ProductManager {
       const product = await ProductModel.findByIdAndDelete(id);
 
       if (!product) {
-        console.log("No se encuentra");
         return null;
       }
-
-      console.log("Producto eliminado correctamente!");
+      return product;
     } catch (error) {
       console.log("Error al eliminar el producto", error);
-      throw error;
     }
   }
 }

@@ -98,5 +98,105 @@
     "stock": 26,
     "status": true,
     "category": "comida"
+  },
+  {
+    "id": 11,
+    "title": "Piña",
+    "description": "Este es un producto prueba",
+    "price": 2700,
+    "code": "pouikdfgh",
+    "stock": 26,
+    "status": true,
+    "category": "comida"
+  },
+  {
+    "id": 12,
+    "title": "Nachos",
+    "description": "Este es un producto prueba",
+    "price": 2100,
+    "code": "pouilkkh",
+    "stock": 21,
+    "status": true,
+    "category": "comida"
+  },
+  {
+    "id": 13,
+    "title": "Catsup",
+    "description": "Este es un producto prueba",
+    "price": 2001,
+    "code": "pouirdtkh",
+    "stock": 2,
+    "status": true,
+    "category": "comida"
+  },
+  {
+    "id": 14,
+    "title": "Semillas Tostadas",
+    "description": "Este es un producto prueba",
+    "price": 13,
+    "code": "pouqaikh",
+    "stock": 26,
+    "status": true,
+    "category": "comida"
+  },
+  {
+    "id": 15,
+    "title": "Cremas",
+    "description": "Este es un producto prueba",
+    "price": 600,
+    "code": "pouikhbv",
+    "stock": 15,
+    "status": true,
+    "category": "comida"
+  },
+  {
+    "id": 16,
+    "title": "Mostaza",
+    "description": "Este es un producto prueba",
+    "price": 30,
+    "code": "pouikhlk",
+    "stock": 6,
+    "status": true,
+    "category": "comida"
+  },
+  {
+    "id": 17,
+    "title": "Chiles",
+    "description": "Este es un producto prueba",
+    "price": 90,
+    "code": "pouikhnb",
+    "stock": 26,
+    "status": true,
+    "category": "comida"
+  },
+  {
+    "id": 18,
+    "title": "Salchicha",
+    "description": "Este es un producto prueba",
+    "price": 40,
+    "code": "pouikhyr",
+    "stock": 27,
+    "status": true,
+    "category": "comida"
+  },
+  {
+    "id": 19,
+    "title": "Paste",
+    "description": "Este es un producto prueba",
+    "price": 200,
+    "code": "tyth",
+    "stock": 6,
+    "status": true,
+    "category": "comida"
+  },
+  {
+    "id": 20,
+    "title": "Tortillas",
+    "description": "Este es un producto prueba",
+    "price": 40,
+    "code": "kiyfgmf",
+    "stock": 100,
+    "status": true,
+    "category": "comida"
   }
 ]

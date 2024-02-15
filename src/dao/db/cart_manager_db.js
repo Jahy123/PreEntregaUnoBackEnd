@@ -13,37 +13,88 @@ class CartManager {
 
   async getCartById(id) {
     try {
-      const cart = await CartModel.findById(id);
+      const cart = await CartModel.findById(id).populate("products.product");
       if (!cart) {
-        console.log("cart not found");
+        console.log("producto no encontrado");
         return null;
       }
-      console.log("Cart found");
+
+      console.log("Carrito encontrado", cart);
       return cart;
     } catch (error) {
-      console.log("Search cannot be performed");
+      console.log("La busqueda no pudo ser realizada", error);
     }
   }
 
   async addProductToCart(productId, cartId, quantity = 1) {
     try {
-      const cart = await this.getCartById(cartId);
-      const product = cart.products.find(
-        (item) => item.product.toString() === productId
+      const cartAndProduct = await CartModel.findOneAndUpdate(
+        { _id: cartId, "products.product": productId },
+        {
+          $inc: { "products.$.quantity": quantity },
+        },
+        { new: true }
       );
 
-      if (product) {
-        product.quantity += quantity;
-      } else {
-        cart.products.push({ product: productId, quantity });
+      if (!cartAndProduct) {
+        // Si el producto no existe en el carrito, agrégalo
+        await CartModel.findByIdAndUpdate(
+          cartId,
+          {
+            $push: {
+              products: {
+                product: productId,
+                quantity: quantity,
+              },
+            },
+          },
+          { new: true }
+        );
       }
-
-      cart.markModified("products");
-
-      await cart.save();
-      return cart;
+      console.log("Producto agregado al carrito");
+      // cartAndProduct contiene el carrito actualizado
+      return cartAndProduct;
     } catch (error) {
-      console.log("Failed to send new cart");
+      console.log("Failed to send new cart", error);
+    }
+  }
+
+  async deleteProductFromCart(cartId, productId) {
+    try {
+      const updatedCart = await CartModel.findByIdAndUpdate(
+        cartId,
+        { $pull: { products: { product: productId } } },
+        { new: true }
+      );
+      return updatedCart;
+    } catch (error) {
+      console.log("Error al eliminar el producto", error);
+    }
+  }
+  async deleteProductsFromCart(cartId) {
+    try {
+      const updatedCart = await CartModel.findByIdAndUpdate(
+        cartId,
+        { $set: { products: [] } },
+        { new: true }
+      );
+      return updatedCart;
+    } catch (error) {
+      console.log("Error al eliminar el producto");
+      return Promise.reject(error);
+    }
+  }
+
+  async updateQuantity(cartId, productId, quantity) {
+    try {
+      const updatedCart = await CartModel.findOneAndUpdate(
+        { _id: cartId, "products.product": productId },
+        { $set: { "products.$.quantity": quantity } },
+        { new: true }
+      );
+      return updatedCart;
+    } catch (error) {
+      console.log("Failed to send new cart", error);
     }
   }
 }
