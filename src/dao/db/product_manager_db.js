@@ -31,29 +31,50 @@ class ProductManager {
     }
   }
 
-  async getProducts(limit, page, sort, query, category, status) {
+  async getProducts(limit, page, sort, category, availability) {
     try {
       const filter = {};
-
-      if (query) {
-        filter.$text = { $search: query };
-      }
 
       if (category) {
         filter.category = category;
       }
 
-      if (status) {
-        filter.status = status;
+      if (availability !== undefined) {
+        filter.stock = availability ? { $gt: 0 } : { $lte: 0 };
       }
 
-      // Realizar la consulta con los parámetros proporcionados
-      const products = await ProductModel.find(filter)
-        .limit(limit)
-        .skip((page - 1) * limit)
-        .sort(sort)
-        .exec();
-      return products;
+      const options = {
+        limit: limit,
+        page: page,
+        sort: sort,
+      };
+
+      const result = await ProductModel.paginate(filter, options);
+
+      const response = {
+        status: "success",
+        payload: result.docs,
+        totalPages: result.totalPages,
+        prevPage: result.prevPage,
+        nextPage: result.nextPage,
+        page: result.page,
+        hasPrevPage: result.hasPrevPage,
+        hasNextPage: result.hasNextPage,
+        prevLink: result.hasPrevPage
+          ? `/api/products?page=${result.prevPage}&limit=${limit}&sort=${sort}&category=${category}&availability=${availability}`
+          : null,
+        nextLink: result.hasNextPage
+          ? `/api/products?page=${result.nextPage}&limit=${limit}&sort=${sort}&category=${category}&availability=${availability}`
+          : null,
+      };
+
+      return response;
+      // ------------------------agregado sin internet
+      // const productsDoc = products.docs.map((product) => {
+      //   const { _id, ...rest } = product.toObject();
+      //   return res;
+      // });
+      // -----------------------------------------------------
     } catch (error) {
       console.log("Error al obtener los productos", error);
     }

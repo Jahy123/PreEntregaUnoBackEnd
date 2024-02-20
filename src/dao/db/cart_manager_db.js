@@ -1,4 +1,5 @@
 const CartModel = require("../models/cart.model.js");
+const ProductModel = require("../models/cart.model.js");
 
 class CartManager {
   async addCart() {
@@ -13,6 +14,7 @@ class CartManager {
 
   async getCartById(id) {
     try {
+      console.log("Valor de id:", id);
       const cart = await CartModel.findById(id).populate("products.product");
       if (!cart) {
         console.log("producto no encontrado");
@@ -23,6 +25,7 @@ class CartManager {
       return cart;
     } catch (error) {
       console.log("La busqueda no pudo ser realizada", error);
+      throw error;
     }
   }
 
@@ -37,7 +40,6 @@ class CartManager {
       );
 
       if (!cartAndProduct) {
-        // Si el producto no existe en el carrito, agrégalo
         await CartModel.findByIdAndUpdate(
           cartId,
           {
@@ -52,7 +54,7 @@ class CartManager {
         );
       }
       console.log("Producto agregado al carrito");
-      // cartAndProduct contiene el carrito actualizado
+
       return cartAndProduct;
     } catch (error) {
       console.log("Failed to send new cart", error);
@@ -85,6 +87,26 @@ class CartManager {
     }
   }
 
+  async updateProductsOfCart(cartId, updatedProducts) {
+    try {
+      const cart = await CartModel.findById(cartId);
+
+      if (!cart) {
+        console.log("Carrito no encontrado");
+      }
+
+      cart.products = updatedProducts;
+
+      cart.markModified("products");
+
+      await cart.save();
+
+      return cart;
+    } catch (error) {
+      console.error("Error al actualizar el carrito en el gestor", error);
+      throw error;
+    }
+  }
   async updateQuantity(cartId, productId, quantity) {
     try {
       const updatedCart = await CartModel.findOneAndUpdate(

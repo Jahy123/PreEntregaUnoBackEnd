@@ -104,6 +104,41 @@ router.delete("/:cid/products/:pid", async (req, res) => {
 });
 
 // ----------------------------------------------------------------------------------------------
+// PUT api/carts/:cid deberá actualizar el carrito con un arreglo de productos con el formato especificado arriba.
+
+router.put("/:cid", async (req, res) => {
+  const cartId = req.params.cid;
+  const updatedProducts = req.body;
+  // Debes enviar un arreglo de productos en el cuerpo de la solicitud
+
+  try {
+    const cart = await CartModel.findById(cartId);
+    if (!cart) {
+      return res.status(404).json({
+        status: "error",
+        error: "Carrito no encontrado",
+      });
+    }
+
+    const updatedCart = await manager.updateProductsOfCart(
+      cartId,
+      updatedProducts
+    );
+    return res.json({
+      message: "productos del carrito actualizados correctamente",
+      updatedCart,
+    });
+  } catch (error) {
+    console.error("Error al actualizar el carrito", error);
+    res.status(500).json({
+      status: "error",
+      error: "Error interno del servidor",
+    });
+  }
+});
+
+// ------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------
 // PUT api/carts/:cid/products/:pid deberá poder actualizar SÓLO la cantidad de ejemplares del producto por cualquier cantidad pasada desde req.body
 
 router.put("/:cid/products/:pid", async (req, res) => {

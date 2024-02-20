@@ -10,18 +10,20 @@ router.get("/", async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     const sort = req.query.sort || null;
-    const query = req.query.query || null;
     const category = req.query.category || null;
-    const status = req.query.status || null;
+    const availability =
+      req.query.availability !== undefined
+        ? req.query.availability === "true"
+        : undefined;
+
     const products = await productManager.getProducts(
       limit,
       page,
       sort,
-      query,
       category,
-      status
+      availability
     );
-
+    console.log(products);
     res.json(products);
   } catch (error) {
     console.error("Error al obtener productos", error);
@@ -41,7 +43,6 @@ router.get("/:pid", async (req, res) => {
         error: "Producto no encontrado",
       });
     }
-
     res.json(product);
   } catch (error) {
     console.error("Error al obtener product", error);
