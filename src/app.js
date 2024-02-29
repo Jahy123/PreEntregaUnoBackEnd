@@ -9,7 +9,34 @@ const handlebars = require("express-handlebars");
 
 const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
+const usersRouter = require("./routes/user.router.js");
+const sessionRouter = require("./routes/sessions.router.js");
 const viewsRouter = require("./routes/views.router.js");
+
+// agregado-----------------
+const cookieParser = require("cookie-parser");
+
+// app.use(cookieParser());
+const session = require("express-session");
+const FileStore = require("session-file-store");
+const MongoStore = require("connect-mongo");
+const fileStore = FileStore(session);
+// const mongoStore =MongoStore(session);
+const cookieSecreta = "hola";
+app.use(cookieParser(cookieSecreta));
+app.use(
+  session({
+    secret: "secretCoder",
+    resave: true,
+    saveUninitialized: true,
+    store: MongoStore.create({
+      mongoUrl:
+        "mongodb+srv://J4HY123:IjeIrbqq6qxjPKHQ@cluster0.efnweff.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0",
+    }),
+  })
+);
+
+// ----------------------------
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -21,6 +48,8 @@ app.set("views", "./src/views");
 
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/sessions", sessionRouter);
 app.use("/", viewsRouter);
 
 const httpServer = app.listen(PORT, () => {
