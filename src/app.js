@@ -3,6 +3,8 @@ const app = express();
 const exphbs = require("express-handlebars");
 const socket = require("socket.io");
 const PORT = 8080;
+const passport = require("passport");
+const initializePassport = require("./config/passport.config.js");
 require("./database.js");
 
 const handlebars = require("express-handlebars");
@@ -13,15 +15,13 @@ const usersRouter = require("./routes/user.router.js");
 const sessionRouter = require("./routes/sessions.router.js");
 const viewsRouter = require("./routes/views.router.js");
 
-// agregado-----------------
 const cookieParser = require("cookie-parser");
 
-// app.use(cookieParser());
 const session = require("express-session");
 const FileStore = require("session-file-store");
 const MongoStore = require("connect-mongo");
 const fileStore = FileStore(session);
-// const mongoStore =MongoStore(session);
+
 const cookieSecreta = "hola";
 app.use(cookieParser(cookieSecreta));
 app.use(
@@ -36,7 +36,9 @@ app.use(
   })
 );
 
-// ----------------------------
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

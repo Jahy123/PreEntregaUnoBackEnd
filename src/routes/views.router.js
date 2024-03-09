@@ -121,13 +121,8 @@ router.get("/products", async (req, res) => {
     if (!req.session.login) {
       return res.redirect("/login");
     }
-    let rol = "user";
-    const { first_name, last_name } = req.session.user;
-    const isAdminEmail = req.session.user.email === "adminCoder@coder.com";
 
-    if (isAdminEmail) {
-      rol = "admin";
-    }
+    const { first_name, last_name, rol } = req.session.user;
 
     console.log("Productos antes del mapeo:", products);
     // console.log("Productos de payload", products.payload);
@@ -180,23 +175,6 @@ router.get("/carts/:cid", async (req, res) => {
     console.error("Error al obtener el carrito", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
-});
-
-function auth(req, res, next) {
-  const isAdmin = req.session.admin === true;
-  const isAdminEmail = req.session.user.email === "adminCoder@coder.com";
-
-  // console.log("Is Password Correct:", isAdminPass);
-
-  if (isAdminEmail) {
-    return next();
-  }
-
-  return res.status(401).send("Error de autorización");
-}
-
-router.get("/private", auth, (req, res) => {
-  res.send("acceso autorizado");
 });
 
 router.get("/", (req, res) => {
