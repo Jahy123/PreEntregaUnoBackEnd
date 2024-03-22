@@ -26,7 +26,6 @@ const initializePassport = () => {
             email,
             age,
             password: createHash(password),
-            rol: "user",
           };
 
           let result = await UserModel.create(newUser);
@@ -53,7 +52,9 @@ const initializePassport = () => {
             return done(null, false);
           }
 
-          if (!isValidPassword(password, user)) return done(null, false);
+          if (!isValidPassword(password, user)) {
+            return done(null, false);
+          }
           return done(null, user);
         } catch (error) {
           return done(error);

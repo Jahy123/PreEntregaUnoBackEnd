@@ -6,6 +6,9 @@ const PORT = 8080;
 const passport = require("passport");
 const initializePassport = require("./config/passport.config.js");
 require("./database.js");
+// agregado clase 22-----------------
+const jwt = require("jsonwebtoken");
+// -------------------------
 
 const handlebars = require("express-handlebars");
 

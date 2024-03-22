@@ -1,12 +1,30 @@
 <h1>Login</h1>
-<form action="/api/sessions/login" method="POST">
-  <label for="email">Email:</label>
-  <input type="email" id="email" name="email" required />
-  <br />
-  <label for="password">Password:</label>
-  <input type="password" id="password" name="password" required />
-  <br />
-  <button type="submit">Login</button>
-  <a href="register">registrate</a>
-  <a href="/api/sessions/github"> Github </a>
-</form>
+
+<div class="upload">
+  <form action="/api/sessions/login" method="POST" class="upload__container">
+
+    <div class="upload__container--title">
+      <input type="text" id="email" name="email" placeholder="Email" required />
+    </div>
+
+    <div class="upload__container--title">
+      <input
+        type="text"
+        id="password"
+        name="password"
+        placeholder="Password"
+        required
+      />
+    </div>
+
+    <div class="upload__container--title">
+      <button type="submit" class="btn"> Iniciar Sesión </button>
+    </div>
+    <div><a href="register">registrate</a>
+      <div>
+
+      </div>
+      <a href="/api/sessions/github"> Github </a>
+    </div>
+  </form>
+</div>

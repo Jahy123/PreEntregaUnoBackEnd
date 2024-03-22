@@ -201,7 +201,6 @@ router.get("/profile", (req, res) => {
     return res.redirect("/");
   }
 
-  // Renderiza la vista de perfil con los datos del usuario
   res.render("profile", { user: req.session.user });
 });
 

@@ -56,7 +56,7 @@ router.post(
   async (req, res) => {
     if (!req.user)
       return res
-        .status(400)
+        .status(401)
         .send({ status: "error", message: "Credenciales inválidas" });
 
     req.session.user = {
@@ -64,7 +64,7 @@ router.post(
       last_name: req.user.last_name,
       age: req.user.age,
       email: req.user.email,
-      rol: "user",
+      rol: req.user.rol,
     };
 
     req.session.login = true;

@@ -5,41 +5,6 @@ const { isValidPassword } = require("../utils/hashBcrypt.js");
 const passport = require("passport");
 router.use(express.json());
 
-// router.post("/login", async (req, res) => {
-//   const { email, password } = req.body;
-//   try {
-//     const user = await UserModel.findOne({ email: email });
-//     if (user) {
-//       if (user.password === password) {
-//         req.session.login = true;
-//         req.session.user = {
-//           email: user.email,
-//           age: user.age,
-//           first_name: user.first_name,
-//           last_name: user.last_name,
-//         };
-//         if (user.email === "adminCoder@coder.com") {
-//           req.session.user.admin = true;
-//         } else {
-//           req.session.user.admin = false;
-//         }
-//         console.log(
-//           "Datos del usuario después de iniciar sesión:",
-//           req.session.user
-//         );
-
-//         res.redirect("/products");
-//       } else {
-//         res.status(401).send({ error: "Contraseña no valida" });
-//       }
-//     } else {
-//       res.status(404).send({ error: "Usuario no encontrado" });
-//     }
-//   } catch (error) {
-//     res.status(400).send({ error: "Error en el login" });
-//   }
-// });
-
 router.get("/logout", (req, res) => {
   if (req.session.login) {
     req.session.destroy();
@@ -53,29 +18,9 @@ router.post(
     failureRedirect: "/api/sessions/faillogin",
   }),
   async (req, res) => {
-    // const adminUser = {
-    //   username: "Admin",
-    //   first_name: "Private",
-    //   last_name: "Private",
-
-    //   age: "private",
-    //   email: "adminCoder@coder.com",
-    //   password: "adminCod3er123",
-    //   rol: "admin",
-    // };
-
-    // if (
-    //   req.user.email === adminUser.email &&
-    //   req.user.password === adminUser.password
-    // ) {
-    //   req.session.login = true;
-    //   req.session.user = { ...adminUser };
-    //   res.redirect("/products");
-    //   return;
-    // }
     if (!req.user)
       return res
-        .status(400)
+        .status(401)
         .send({ status: "error", message: "Credenciales inválidas" });
 
     req.session.user = {
@@ -83,7 +28,7 @@ router.post(
       last_name: req.user.last_name,
       age: req.user.age,
       email: req.user.email,
-      rol: "user",
+      rol: req.user.rol,
     };
 
     req.session.login = true;
@@ -116,4 +61,18 @@ router.get(
     res.redirect("/profile");
   }
 );
+router.get("/current", async (req, res) => {
+  try {
+    const currentUser = req.user;
+
+    if (!currentUser) {
+      return res.status(401).json({ message: "Usuario no autenticado" });
+    }
+
+    return res.status(200).json(currentUser);
+  } catch (error) {
+    console.error("Error al obtener el usuario actual:", error);
+    return res.status(500).json({ message: "Error del servidor" });
+  }
+});
 module.exports = router;

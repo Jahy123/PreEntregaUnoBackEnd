@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const Schema = mongoose.Schema;
+
 const userSchema = new mongoose.Schema({
   first_name: {
     type: String,
@@ -25,8 +27,9 @@ const userSchema = new mongoose.Schema({
   },
   rol: {
     type: String,
-    required: true,
+    default: "user",
   },
+  cart: { type: Schema.Types.ObjectId, ref: "Cart" },
 });
 
 const UserModel = mongoose.model("user", userSchema);
