@@ -3,3 +3,4 @@ node_modules/
 ensayo.json
 ensayos.js
 index.html
+.env.development
