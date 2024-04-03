@@ -26,8 +26,7 @@ class ProductManager {
 
       await newProduct.save();
     } catch (error) {
-      console.log("Error al agregar producto", error);
-      throw error;
+      return "Error al agregar producto", error;
     }
   }
 
@@ -69,12 +68,6 @@ class ProductManager {
       };
 
       return response;
-      // ------------------------agregado sin internet
-      // const productsDoc = products.docs.map((product) => {
-      //   const { _id, ...rest } = product.toObject();
-      //   return res;
-      // });
-      // -----------------------------------------------------
     } catch (error) {
       console.log("Error al obtener los productos", error);
     }

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const UserModel = require("../dao/models/user.model.js");
+const UserModel = require("../services/models/user.model.js");
 router.use(express.json());
 const { createHash } = require("../utils/hashBcrypt.js");
 const passport = require("passport");

@@ -2,15 +2,15 @@ const express = require("express");
 const app = express();
 const exphbs = require("express-handlebars");
 const socket = require("socket.io");
-const PORT = 8080;
+
 const passport = require("passport");
 const initializePassport = require("./config/passport.config.js");
 require("./database.js");
 // agregado clase 22-----------------
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 // -------------------------
 
-const handlebars = require("express-handlebars");
+// const handlebars = require("express-handlebars");
 
 const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
@@ -23,18 +23,19 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const FileStore = require("session-file-store");
 const MongoStore = require("connect-mongo");
-const fileStore = FileStore(session);
+// const fileStore = FileStore(session);
+// agregado clase 25----------------------
+const configObject = require("./config/config.js");
+// -------------------------------------------
 
-const cookieSecreta = "hola";
-app.use(cookieParser(cookieSecreta));
+app.use(cookieParser(configObject.secret_cookie));
 app.use(
   session({
-    secret: "secretCoder",
+    secret: configObject.secret_session,
     resave: true,
     saveUninitialized: true,
     store: MongoStore.create({
-      mongoUrl:
-        "mongodb+srv://J4HY123:IjeIrbqq6qxjPKHQ@cluster0.efnweff.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0",
+      mongoUrl: configObject.mongo_url,
     }),
   })
 );
@@ -57,11 +58,11 @@ app.use("/api/users", usersRouter);
 app.use("/api/sessions", sessionRouter);
 app.use("/", viewsRouter);
 
-const httpServer = app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+const httpServer = app.listen(configObject, () => {
+  console.log(`Servidor escuchando en http://localhost:${configObject.port}`);
 });
 
-const MessageModel = require("./dao/models/message.model.js");
+const MessageModel = require("./services/models/message.model.js");
 const io = new socket.Server(httpServer);
 
 io.on("connection", (socket) => {

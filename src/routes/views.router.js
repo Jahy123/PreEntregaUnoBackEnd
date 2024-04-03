@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const ProductManager = require("../dao/db/product_manager_db.js");
+const ProductManager = require("../services/db/product_manager_db.js");
 const productManager = new ProductManager();
 const mongoose = require("mongoose");
-const CartManager = require("../dao/db/cart_manager_db.js");
+const CartManager = require("../services/db/cart_manager_db.js");
 
 const cartManager = new CartManager();
 // agregado de clase 19-----------------------------------------------------------------------------------

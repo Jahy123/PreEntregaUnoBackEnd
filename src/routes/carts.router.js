@@ -1,11 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const CartManager = require("../dao/db/cart_manager_db.js");
-const ProductManager = require("../dao/db/product_manager_db.js");
-const productManager = new ProductManager();
-const manager = new CartManager();
-const CartModel = require("../dao/models/cart.model.js");
-const ProductModel = require("../dao/models/product.model.js");
+
+const CartController = require("../controllers/cartController.js");
+const cartController = new CartController();
 
 router.use(express.json());
 
@@ -16,8 +13,7 @@ router.use(express.json());
 
 router.post("/", async (req, res) => {
   try {
-    const newCart = await manager.addCart();
-    res.json(newCart);
+    await cartController.addCart(req, res);
   } catch (error) {
     console.error("Error al crear un nuevo carrito", error);
     res.status(500).json({ error: "Error interno del servidor" });
@@ -28,16 +24,7 @@ router.post("/", async (req, res) => {
 // La ruta GET /:cid deberá listar los productos que pertenezcan al carrito con el parámetro cid proporcionados.
 router.get("/:cid", async (req, res) => {
   try {
-    const id = req.params.cid;
-    const cart = await manager.getCartById(id);
-
-    if (!cart) {
-      return res
-        .status(404)
-        .send({ status: "error", message: "Cart not found" });
-    }
-
-    return res.status(200).json({ message: "carrito encontrado", cart });
+    await cartController.getCartById(req, res);
   } catch (error) {
     res.status(400).send({ status: "error", message: error.message });
   }
@@ -52,20 +39,7 @@ router.get("/:cid", async (req, res) => {
 
 router.post("/:cid/product/:pid", async (req, res) => {
   try {
-    const productId = req.params.pid;
-    const cartId = req.params.cid;
-    const quantity = req.body.quantity || 1;
-    await manager.addProductToCart(productId, cartId, quantity);
-
-    const cart = await CartModel.findOneAndUpdate({ _id: cartId });
-    const product = await ProductModel.findOneAndUpdate({ _id: productId });
-    if (!cart) {
-      return res.status(404).json({ message: "Carrito no encontrado" });
-    }
-    if (!product) {
-      return res.status(404).json({ message: "Producto no encontrado" });
-    }
-    return res.status(200).json({ message: "Producto agregado al carrito" });
+    await cartController.addProductToCart(req, res);
   } catch (error) {
     console.error("Error en la ruta POST /:cid/product/:pid", error);
     res.status(500).json({ status: "error", message: error.message });
@@ -74,32 +48,9 @@ router.post("/:cid/product/:pid", async (req, res) => {
 
 router.delete("/:cid/products/:pid", async (req, res) => {
   try {
-    const cartId = req.params.cid;
-    const productId = req.params.pid;
-    const cart = manager.getCartById(cartId);
-
-    if (!cart) {
-      res.json("Carrito no encontrado:");
-    } else {
-      const cartAndProduct = await CartModel.findOne({
-        _id: cartId,
-        products: { $elemMatch: { product: productId } },
-      });
-
-      if (!cartAndProduct) {
-        return res.json({
-          message: "Producto no existe en el carrito",
-        });
-      } else {
-        manager.deleteProductFromCart(cartId, productId);
-      }
-    }
-    return res.json({
-      message: "Producto eliminado correctamente",
-    });
+    await cartController.deleteProductsFromCart(req, res);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: "error", message: error.message });
+    res.status(500).json({ message: "error en el servidor", error });
   }
 });
 
@@ -107,27 +58,8 @@ router.delete("/:cid/products/:pid", async (req, res) => {
 // PUT api/carts/:cid deberá actualizar el carrito con un arreglo de productos con el formato especificado arriba.
 
 router.put("/:cid", async (req, res) => {
-  const cartId = req.params.cid;
-  const updatedProducts = req.body;
-  // Debes enviar un arreglo de productos en el cuerpo de la solicitud
-
   try {
-    const cart = await CartModel.findById(cartId);
-    if (!cart) {
-      return res.status(404).json({
-        status: "error",
-        error: "Carrito no encontrado",
-      });
-    }
-
-    const updatedCart = await manager.updateProductsOfCart(
-      cartId,
-      updatedProducts
-    );
-    return res.json({
-      message: "productos del carrito actualizados correctamente",
-      updatedCart,
-    });
+    await cartController.updateProductsFromCart(req, res);
   } catch (error) {
     console.error("Error al actualizar el carrito", error);
     res.status(500).json({
@@ -143,30 +75,7 @@ router.put("/:cid", async (req, res) => {
 
 router.put("/:cid/products/:pid", async (req, res) => {
   try {
-    const productId = req.params.pid;
-    const cartId = req.params.cid;
-    const { quantity } = req.body;
-    const cart = manager.getCartById(cartId);
-
-    if (!cart) {
-      res.json("Carrito no encontrado:");
-    } else {
-      const cartAndProduct = await CartModel.findOne({
-        _id: cartId,
-        products: { $elemMatch: { product: productId } },
-      });
-
-      if (!cartAndProduct) {
-        return res.json({
-          message: "Producto no existe en el carrito",
-        });
-      } else {
-        await manager.updateQuantity(cartId, productId, quantity);
-      }
-    }
-    return res.json({
-      message: "Cantidad del producto actualizada correctamente",
-    });
+    await cartController.updateQuantity(req, res);
   } catch (error) {
     console.error("Error en la ruta PUT /:cid/product/:pid", error);
     res.status(500).json({ status: "error", message: error.message });
@@ -178,15 +87,7 @@ router.put("/:cid/products/:pid", async (req, res) => {
 
 router.delete("/:cid", async (req, res) => {
   try {
-    const cartId = req.params.cid;
-    const cart = manager.getCartById(cartId);
-    await manager.deleteProductsFromCart(cartId);
-    if (cart) {
-      return res.json({
-        message: "Productos eliminados correctamente del carrito",
-      });
-    }
-    return res.status(404).json({ message: "Carrito no encontrado" });
+    await cartController.deleteAllProducts(req, res);
   } catch (error) {
     if (error.message === "Carrito no encontrado") {
       return res.status(404).json({ message: "Carrito no encontrado" });
