@@ -1,8 +1,8 @@
 const TicketModel = require("../services/models/ticket.model.js");
 const UserModel = require("../services/models/user.model.js");
-const CartManager = require("../services/db/cart_manager_db.js");
+const CartManager = require("../services/db/cartService.js");
 const manager = new CartManager();
-const ProductManager = require("../services/db/product_manager_db.js");
+const ProductManager = require("../services/db/productService.js");
 const productManager = new ProductManager();
 const { generateUniqueCode, calculateTotal } = require("../utils/cartutils.js");
 const CartModel = require("../services/models/cart.model.js");
@@ -37,6 +37,13 @@ class CartController {
       const productId = req.params.pid;
       const cartId = req.params.cid;
       const quantity = req.body.quantity || 1;
+
+      const product = await productManager.getProductById(productId);
+      if (!product) {
+        return res.status(404).json({
+          error: "Producto no encontrado",
+        });
+      }
 
       const cartAndProduct = await manager.addProductToCart(
         productId,
@@ -105,12 +112,10 @@ class CartController {
         cartId,
         updatedProducts
       );
-      return res
-        .status(200)
-        .json({
-          message: "productos del carrito actualizados correctamente",
-          updatedCart,
-        });
+      return res.status(200).json({
+        message: "productos del carrito actualizados correctamente",
+        updatedCart,
+      });
     } catch (error) {
       res.status(500).json({ error: "Error del servidor" });
     }

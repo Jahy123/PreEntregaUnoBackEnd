@@ -55,7 +55,7 @@ app.use("/api/carts", cartsRouter);
 app.use("/api/users", userRouter);
 app.use("/", viewsRouter);
 
-const httpServer = app.listen(configObject, () => {
+const httpServer = app.listen(configObject.port, () => {
   console.log(`Servidor escuchando en http://localhost:${configObject.port}`);
 });
 

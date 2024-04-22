@@ -1,5 +1,5 @@
 const socket = require("socket.io");
-const ProductManager = require("../services/db/product_manager_db.js");
+const ProductManager = require("../services/db/productService.js");
 const productManager = new ProductManager();
 const MessageModel = require("../services/models/message.model.js");
 

@@ -24,18 +24,20 @@ class CartManager {
       throw new Error("Error");
     }
   }
-
   async addProductToCart(productId, cartId, quantity = 1) {
     try {
-      const cartAndProduct = await CartModel.findOneAndUpdate(
-        { _id: cartId, "products.product": productId },
-        {
-          $inc: { "products.$.quantity": quantity },
-        },
-        { new: true }
-      );
+      let cartAndProduct = await CartModel.findOne({
+        _id: cartId,
+        "products.product": productId,
+      });
 
-      if (!cartAndProduct) {
+      if (cartAndProduct) {
+        await CartModel.findOneAndUpdate(
+          { _id: cartId, "products.product": productId },
+          { $inc: { "products.$.quantity": quantity } },
+          { new: true }
+        );
+      } else {
         await CartModel.findByIdAndUpdate(
           cartId,
           {
@@ -49,11 +51,15 @@ class CartManager {
           { new: true }
         );
       }
+
       console.log("Producto agregado al carrito");
+
+      cartAndProduct = await CartModel.findById(cartId);
 
       return cartAndProduct;
     } catch (error) {
-      console.log("Failed to send new cart", error);
+      console.log("Error al agregar el producto al carrito:", error);
+      throw error;
     }
   }
 

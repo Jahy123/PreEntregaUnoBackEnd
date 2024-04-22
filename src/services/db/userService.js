@@ -1,9 +1,9 @@
 const UserModel = require("../models/user.model.js");
 
-class UserRepository {
+class UserService {
   async findByEmail(email) {
     return UserModel.findOne({ email });
   }
 }
 
-module.exports = UserRepository;
+module.exports = UserService;

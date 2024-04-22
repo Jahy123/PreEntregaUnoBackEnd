@@ -1,5 +1,5 @@
 const ProductModel = require("../services/models/product.model.js");
-const CartManager = require("../services/db/cart_manager_db.js");
+const CartManager = require("../services/db/cartService.js");
 const cartManager = new CartManager();
 const authMiddleware = require("../middleware/authMiddleware");
 
