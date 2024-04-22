@@ -1,7 +1,31 @@
 <h1>Products</h1>
-<div id="products-container">
+<h1>Real Time Products</h1>
 
-</div>
+<div id="contenedorProductos"></div>
+{{#if hasNextPage}}
+  <a href="/products?page={{nextPage}}">Siguiente</a>
+{{/if}}
+{{#if hasPrevPage}}
+  <a href="/products?page={{prevPage}}">Anterior</a>
+{{/if}}
+
+<p>Página {{currentPage}} de {{totalPages}}</p>
+<h2>Formulario para agregar productos</h2>
+
+<form>
+  <input type="text" id="title" placeholder="Titulo" />
+  <input type="text" id="description" placeholder="Descripcion" />
+  <input type="number" id="price" placeholder="Precio" />
+  <input type="text" id="img" value="Sin Imagen" />
+  <input type="text" id="code" placeholder="Código" />
+  <input type="number" id="stock" placeholder="Stock" />
+  <input type="text" id="category" placeholder="Categoria" />
+  <select id="status">
+    <option value="true"> Activo </option>
+    <option value="false"> Inactivo </option>
+  </select>
+  <button type="button" id="btnEnviar"> Enviar </button>
+</form>
 
 <script
   src="https://cdn.socket.io/4.7.3/socket.io.min.js"

@@ -14,18 +14,14 @@ class CartManager {
 
   async getCartById(id) {
     try {
-      console.log("Valor de id:", id);
-      const cart = await CartModel.findById(id).populate("products.product");
-      if (!cart) {
-        console.log("producto no encontrado");
+      const carrito = await CartModel.findById(id);
+      if (!carrito) {
+        console.log("No existe ese carrito con el id");
         return null;
       }
-
-      console.log("Carrito encontrado", cart);
-      return cart;
+      return carrito;
     } catch (error) {
-      console.log("La busqueda no pudo ser realizada", error);
-      throw error;
+      throw new Error("Error");
     }
   }
 

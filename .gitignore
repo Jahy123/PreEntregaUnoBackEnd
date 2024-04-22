@@ -4,3 +4,6 @@ ensayo.json
 ensayos.js
 index.html
 .env.development
+dao
+sessions.router.js
+process.js

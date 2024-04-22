@@ -1,0 +1,18 @@
+<h1>Inicio</h1>
+<div>
+
+  {{#if user}}
+
+    <a href="login">Iniciar sesión</a>
+    <a href="register">Registrarse</a>
+  {{else}}
+
+    <a href="/api/users/profile">Perfil</a>
+
+    <form action="/api/users/logout" method="POST">
+      <button class="btn" type="submit">cerrar sesión</button>
+    </form>
+
+  {{/if}}
+</div>
+<script src="js/main.js"></script>

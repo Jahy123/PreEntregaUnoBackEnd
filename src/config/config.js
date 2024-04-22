@@ -13,6 +13,8 @@ const configObject = {
   port: process.env.PORT,
   secret_cookie: process.env.SECRET_COOKIE,
   secret_session: process.env.SECRET_SESSION,
+  secret_or_key: process.env.SECRET_OR_KEY,
+  token: process.env.TOKEN,
 };
 
 module.exports = configObject;

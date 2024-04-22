@@ -1,7 +1,8 @@
 <h1>Productos</h1>
-<h2>Bienvenido {{userFirstName}} {{userLastName}}</h2>
-<p>Rol: {{rol}}</p>
-<a href="/api/sessions/logout">Logout</a>
+<a href="/">inicio</a>
+<form action="/api/users/logout" method="POST">
+  <button class="btn" type="submit">Logout</button>
+</form>
 
 {{#each products}}
 
@@ -10,7 +11,9 @@
     <p>{{description}}</p>
     <p>Precio: ${{price}}</p>
     <p>Categoría: {{category}}</p>
-    <button>Agregar al Carrito</button>
+    <form action="/api/carts/{{../cartId}}/product/{{id}}" method="POST">
+                    <button class="btn" type="submit">Agregar al Carrito</button>
+                </form>
   </div>
 {{/each}}
 
