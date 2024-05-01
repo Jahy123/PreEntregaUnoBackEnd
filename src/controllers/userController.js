@@ -5,17 +5,28 @@ const { createHash, isValidPassword } = require("../utils/hashBcrypt.js");
 const UserDTO = require("../dto/user.dto.js");
 const configObject = require("../config/config.js");
 const { secret_or_key, token } = configObject;
+const CustomError = require("../services/errors/custom-error.js");
+const { generateInfoError } = require("../services/errors/info.js");
+const { EErrors } = require("../services/errors/enums.js");
 
 class UserController {
   async register(req, res) {
     const { first_name, last_name, email, password, age } = req.body;
+
     try {
+      if (!first_name || !last_name || !email) {
+        throw CustomError.createError({
+          name: "Usuario nuevo",
+          cause: generateInfoError({ first_name, last_name, email }),
+          message: "Error al intentar crear un usuario",
+          code: EErrors.TYPE_INVALID,
+        });
+      }
       const user = await UserModel.findOne({ email });
       if (user) {
         return res.status(400).send("El usuario ya existe");
       }
 
-      //Creo un nuevo carrito:
       const newCart = new CartModel();
       await newCart.save();
 

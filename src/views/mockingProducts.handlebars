@@ -1,0 +1,22 @@
+<h1>Hola bienvenido al apartado Mocking Products</h1>
+
+<h2>Lista de Productos</h2>
+{{#each products}}
+  <div class="product">
+    <h2>{{title}}</h2>
+    <p>id: {{id}}</p>
+    <p>Description: {{description}}</p>
+    <p>Price: ${{price}}</p>
+    <p>Images:
+      <img src="{{img}}" />
+    </p>
+    <p>code: {{code}}</p>
+    <p>stock: {{stock}}</p>
+    <p>category: {{category}}</p>
+    <p>status: {{status}}</p>
+    <p>Thumbnails:
+      <img src="{{thumbnails}}" />
+    </p>
+
+  </div>
+{{/each}}

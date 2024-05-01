@@ -25,5 +25,6 @@ router.get(
 );
 router.get("/chat", checkUserRole(["user"]), viewsController.renderChat);
 router.get("/", authMiddleware, viewsController.renderHome);
+router.get("/mockingproducts", viewsController.renderMockingProducts);
 
 module.exports = router;

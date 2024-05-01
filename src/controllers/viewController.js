@@ -1,5 +1,7 @@
 const ProductModel = require("../services/models/product.model.js");
 const CartManager = require("../services/db/cartService.js");
+const ProductManager = require("../services/db/mockingProductsService.js");
+const productManager = new ProductManager();
 const cartManager = new CartManager();
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -117,6 +119,18 @@ class ViewsController {
     }
 
     res.render("home");
+  }
+
+  async renderMockingProducts(req, res) {
+    const products = [];
+
+    for (let i = 0; i < 100; i++) {
+      const product = await productManager.createProduct();
+      products.push(product);
+    }
+
+    console.log(products);
+    res.render("mockingProducts", { products: products });
   }
 }
 
