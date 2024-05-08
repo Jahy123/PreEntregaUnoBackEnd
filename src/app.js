@@ -70,7 +70,7 @@ const SocketManager = require("./sockets/socketmanager.js");
 new SocketManager(httpServer);
 
 // logger
-app.get("/loggertest", (req, res) => {
+app.get("/loggerTest", (req, res) => {
   req.logger.fatal("Error fatal");
   req.logger.error("Error");
   req.logger.warning("Advertencia");
