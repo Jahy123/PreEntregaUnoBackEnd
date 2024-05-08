@@ -39,7 +39,7 @@ class ViewsController {
         cartId,
       });
     } catch (error) {
-      console.error("Error al obtener productos", error);
+      req.logger.error("Error al obtener productos", error);
       res.status(500).json({
         status: "error",
         error: "Error interno del servidor",
@@ -79,7 +79,7 @@ class ViewsController {
         cartId,
       });
     } catch (error) {
-      console.error("Error al obtener el carrito", error);
+      req.logger.error("Error al obtener el carrito", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }
@@ -104,7 +104,7 @@ class ViewsController {
     try {
       res.render("realtimeproducts");
     } catch (error) {
-      console.log("error en la vista real time", error);
+      req.logger.error("error en la vista real time", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }
@@ -129,7 +129,7 @@ class ViewsController {
       products.push(product);
     }
 
-    console.log(products);
+    req.logger.info(products);
     res.render("mockingProducts", { products: products });
   }
 }

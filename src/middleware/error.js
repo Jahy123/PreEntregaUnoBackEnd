@@ -1,7 +1,7 @@
 const { EErrors } = require("../services/errors/enums.js");
 
 const errorHandle = (error, req, res, next) => {
-  console.log(error.cause);
+  req.logger.error(error.cause);
   switch (error.code) {
     case EErrors.TYPE_INVALID:
       res.send({ status: "error", error: error.name });

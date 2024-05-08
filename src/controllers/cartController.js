@@ -205,7 +205,7 @@ class CartController {
         productsNotAvailable,
       });
     } catch (error) {
-      console.error("Error al procesar la compra:", error);
+      req.logger.error("Error al procesar la compra");
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }

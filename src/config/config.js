@@ -15,6 +15,7 @@ const configObject = {
   secret_session: process.env.SECRET_SESSION,
   secret_or_key: process.env.SECRET_OR_KEY,
   token: process.env.TOKEN,
+  node_env: process.env.NODE_ENV,
 };
 
 module.exports = configObject;

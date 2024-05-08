@@ -10,6 +10,7 @@ const configObject = require("./config/config.js");
 require("./database.js");
 // const session = require("express-session");
 const errorHandle = require("./middleware/error.js");
+const addLogger = require("./utils/logger.js");
 
 const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 app.use(errorHandle);
+app.use(addLogger);
 
 //Passport
 app.use(passport.initialize());
@@ -66,3 +68,15 @@ const httpServer = app.listen(configObject.port, () => {
 ///Websockets:
 const SocketManager = require("./sockets/socketmanager.js");
 new SocketManager(httpServer);
+
+// logger
+app.get("/loggertest", (req, res) => {
+  req.logger.fatal("Error fatal");
+  req.logger.error("Error");
+  req.logger.warning("Advertencia");
+  req.logger.info("Mensaje de Info");
+  req.logger.http("Mensaje de ruta");
+  req.logger.debug("Mensaje de debug");
+
+  res.send("Test de logs");
+});
