@@ -1,6 +1,8 @@
 const ProductManager = require("../services/db/productService.js");
 const productManager = new ProductManager();
 const ProductModel = require("../services/models/product.model.js");
+const UserModel = require("../services/models/user.model.js");
+const logger = require("../utils/logger.js");
 
 class ProductController {
   async getProducts(req, res) {
@@ -14,9 +16,9 @@ class ProductController {
         query
       );
 
-      res.json(products);
+      res.status(200).send(products);
     } catch (error) {
-      res.status(500).send("Error");
+      res.status(500).send(" Error interno del servidor");
     }
   }
 
@@ -29,7 +31,10 @@ class ProductController {
           error: "Producto no encontrado",
         });
       }
-      res.json(product);
+      res.status(200).json({
+        message: "Producto encontrado",
+        product,
+      });
     } catch (error) {
       res.status(500).json({ error: "Error del servidor" });
     }
@@ -45,13 +50,31 @@ class ProductController {
           .json({ message: "Todos los campos son obligatorios" });
       }
 
-      const product = await ProductModel.findOne({ code: code });
-      if (product) {
-        return res.status(400).json({ message: "El valor de code ya existe" });
+      const existingProduct = await ProductModel.findOne({ code: code });
+      if (existingProduct) {
+        return res.status(409).json({ message: "El valor de code ya existe" });
       }
-      await productManager.addProduct(newProduct);
+
+      // Asignar el owner al correo del usuario autenticado
+      const ownerEmail = req.user.email; // Asumiendo que `authenticateToken` agrega el usuario decodificado al objeto req
+
+      // Verificar si el usuario es premium o admin
+      const user = await UserModel.findOne({ email: ownerEmail });
+      if (!user || (user.role !== "premium" && user.role !== "admin")) {
+        return res.status(403).json({
+          message:
+            "El usuario debe ser premium o admin para agregar un producto.",
+        });
+      }
+
+      newProduct.owner = ownerEmail;
+
+      const product = new ProductModel(newProduct);
+      await product.save();
+
       return res.status(200).json({
         message: "Producto agregado exitosamente",
+        product,
       });
     } catch (error) {
       return res
@@ -61,43 +84,73 @@ class ProductController {
   }
 
   async updateProduct(req, res) {
-    const id = req.params.pid;
-    const product = req.body;
+    const productId = req.params.pid;
+    const updatedProduct = req.body;
 
     try {
-      const updatedProduct = await productManager.updateProduct(id, product);
+      const product = await ProductModel.findById(productId);
 
-      if (!updatedProduct) {
-        res
-          .status(404)
-          .send({ message: "El producto que desea actualizar no existe" });
-      } else {
+      // Verificar si el usuario es admin o el propietario del producto
+      if (
+        !product ||
+        (req.user.role !== "admin" && product.owner !== req.user.email)
+      ) {
         return res
-          .status(200)
-          .json({ message: "Producto actualizado exitosamente" });
+          .status(403)
+          .json({ message: "No tienes permiso para modificar este producto." });
       }
+
+      // Actualizar el producto
+      const updated = await productManager.updateProduct(
+        productId,
+        updatedProduct
+      );
+      if (!updated) {
+        return res
+          .status(404)
+          .json({ message: "El producto que desea actualizar no existe" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Producto actualizado exitosamente" });
     } catch (error) {
-      res
+      return res
         .status(500)
         .json({ message: "Error del servidor", error: error.message });
     }
   }
   async deleteProduct(req, res) {
-    const id = req.params.pid;
+    const productId = req.params.pid;
 
     try {
-      const product = await productManager.deleteProduct(id);
-      if (!product) {
-        res
-          .status(404)
-          .send({ message: "El producto que desea eliminar no existe" });
-      } else {
+      const product = await ProductModel.findById(productId);
+
+      // Verificar si el usuario es admin o el propietario del producto
+      if (
+        !product ||
+        (req.user.role !== "admin" && product.owner !== req.user.email)
+      ) {
         return res
-          .status(200)
-          .json({ message: "Producto eliminado exitosamente" });
+          .status(403)
+          .json({ message: "No tienes permiso para eliminar este producto." });
       }
+
+      // Eliminar el producto
+      const deleted = await productManager.deleteProduct(productId);
+      if (!deleted) {
+        return res
+          .status(404)
+          .json({ message: "El producto que desea eliminar no existe" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Producto eliminado exitosamente" });
     } catch (error) {
-      res.status(500).json({ error: "Error del servidor" });
+      return res
+        .status(500)
+        .json({ message: "Error del servidor", error: error.message });
     }
   }
 }

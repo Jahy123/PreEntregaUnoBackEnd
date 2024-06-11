@@ -1,9 +1,11 @@
 const ProductModel = require("../services/models/product.model.js");
+const UserModel = require("../services/models/user.model.js");
 const CartManager = require("../services/db/cartService.js");
 const ProductManager = require("../services/db/mockingProductsService.js");
 const productManager = new ProductManager();
 const cartManager = new CartManager();
-const authMiddleware = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authmiddleware");
+const logger = require("../utils/logger.js");
 
 class ViewsController {
   async renderProducts(req, res) {
@@ -39,7 +41,7 @@ class ViewsController {
         cartId,
       });
     } catch (error) {
-      req.logger.error("Error al obtener productos", error);
+      logger.error("Error al obtener productos", error);
       res.status(500).json({
         status: "error",
         error: "Error interno del servidor",
@@ -53,7 +55,7 @@ class ViewsController {
       const cart = await cartManager.getProductById(cartId);
 
       if (!cart) {
-        console.log("No existe ese carrito con el id");
+        logger.warning("No existe ese carrito con el id");
         return res.status(404).json({ error: "Carrito no encontrado" });
       }
 
@@ -79,7 +81,7 @@ class ViewsController {
         cartId,
       });
     } catch (error) {
-      req.logger.error("Error al obtener el carrito", error);
+      logger.error("Error al obtener el carrito", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }
@@ -104,7 +106,7 @@ class ViewsController {
     try {
       res.render("realtimeproducts");
     } catch (error) {
-      req.logger.error("error en la vista real time", error);
+      logger.error("error en la vista real time", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }
@@ -129,8 +131,34 @@ class ViewsController {
       products.push(product);
     }
 
-    req.logger.info(products);
+    logger.info(products);
     res.render("mockingProducts", { products: products });
+  }
+  async renderOwnerProducts(req, res) {
+    try {
+      const ownerEmail = req.params.email;
+
+      // Buscar el usuario por su correo electrónico
+      const user = await UserModel.findOne({ email: ownerEmail });
+
+      if (!user) {
+        return res.status(404).send("Usuario no encontrado");
+      }
+
+      // Obtener los productos del propietario específico
+      const products = await ProductModel.find({ owner: ownerEmail });
+      const mapProducts = products.map((product) =>
+        JSON.parse(JSON.stringify(product))
+      );
+
+      logger.debug(mapProducts);
+
+      // Renderizar la vista y pasar los productos
+      res.render("ownerProducts", { mapProducts });
+    } catch (error) {
+      logger.error("Error al obtener los productos del dueño:", error);
+      res.status(500).send("Error al obtener los productos del dueño");
+    }
   }
 }
 

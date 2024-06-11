@@ -1,5 +1,6 @@
 const ProductManager = require("../services/db/mockingProductsService.js");
 const productManager = new ProductManager();
+const logger = require("../utils/logger.js");
 
 class ProductController {
   async createProduct(req, res) {

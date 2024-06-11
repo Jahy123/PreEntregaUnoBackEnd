@@ -1,4 +1,5 @@
 const { faker } = require("@faker-js/faker");
+const logger = require("../../utils/logger.js");
 class ProductManager {
   async createProduct() {
     try {
@@ -15,7 +16,7 @@ class ProductManager {
         thumbnails: faker.image.avatarLegacy(),
       };
     } catch (error) {
-      console.log("Error al generar producto");
+      logger.error("Error al generar producto");
     }
   }
   async getProducts() {

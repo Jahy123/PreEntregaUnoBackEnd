@@ -1,6 +1,6 @@
 const CartModel = require("../models/cart.model.js");
 const ProductModel = require("../models/cart.model.js");
-
+const logger = require("../../utils/logger.js");
 class CartManager {
   async addCart() {
     try {
@@ -8,7 +8,7 @@ class CartManager {
       await newCart.save();
       return newCart;
     } catch (error) {
-      console.log("Could not add cart");
+      logger.error("Could not add cart");
     }
   }
 
@@ -16,7 +16,7 @@ class CartManager {
     try {
       const carrito = await CartModel.findById(id);
       if (!carrito) {
-        console.log("No existe ese carrito con el id");
+        logger.warning("No existe ese carrito con el id");
         return null;
       }
       return carrito;
@@ -52,13 +52,13 @@ class CartManager {
         );
       }
 
-      console.log("Producto agregado al carrito");
+      logger.info("Producto agregado al carrito");
 
       cartAndProduct = await CartModel.findById(cartId);
 
       return cartAndProduct;
     } catch (error) {
-      console.log("Error al agregar el producto al carrito:", error);
+      logger.error("Error al agregar el producto al carrito:", error);
       throw error;
     }
   }
@@ -72,7 +72,7 @@ class CartManager {
       );
       return updatedCart;
     } catch (error) {
-      console.log("Error al eliminar el producto", error);
+      logger.error("Error al eliminar el producto", error);
     }
   }
   async deleteProductsFromCart(cartId) {
@@ -84,7 +84,7 @@ class CartManager {
       );
       return updatedCart;
     } catch (error) {
-      console.log("Error al eliminar el producto");
+      logger.error("Error al eliminar el producto");
       return Promise.reject(error);
     }
   }
@@ -94,7 +94,7 @@ class CartManager {
       const cart = await CartModel.findById(cartId);
 
       if (!cart) {
-        console.log("Carrito no encontrado");
+        logger.error("Carrito no encontrado");
       }
 
       cart.products = updatedProducts;
@@ -105,7 +105,7 @@ class CartManager {
 
       return cart;
     } catch (error) {
-      console.error("Error al actualizar el carrito en el gestor", error);
+      logger.error("Error al actualizar el carrito en el gestor", error);
       throw error;
     }
   }
@@ -118,7 +118,7 @@ class CartManager {
       );
       return updatedCart;
     } catch (error) {
-      console.log("Failed to send new cart", error);
+      logger.error("Failed to send new cart", error);
     }
   }
 }

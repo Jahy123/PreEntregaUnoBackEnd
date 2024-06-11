@@ -1,5 +1,5 @@
 const ProductModel = require("../models/product.model.js");
-
+const logger = require("../../utils/logger.js");
 class ProductManager {
   async addProduct({
     title,
@@ -87,14 +87,14 @@ class ProductManager {
       const product = await ProductModel.findById(id);
 
       if (!product) {
-        console.log("producto no encontrado");
+        logger.warning("producto no encontrado");
         return null;
       }
 
-      console.log("producto encontrado");
+      logger.info("producto encontrado");
       return product;
     } catch (error) {
-      console.log("Error al traer un product por id");
+      logger.error("Error al traer un product por id");
     }
   }
 
@@ -103,14 +103,14 @@ class ProductManager {
       const product = await ProductModel.findByIdAndUpdate(id, productUpdate);
 
       if (!product) {
-        console.log("No se encuentra el producto");
+        logger.warning("No se encuentra el producto");
         return null;
       }
 
-      console.log("Producto actualizado con exito");
+      logger.info("Producto actualizado con exito");
       return product;
     } catch (error) {
-      console.log("Error al actualizar el producto", error);
+      logger.error("Error al actualizar el producto", error);
     }
   }
   async deleteProduct(id) {
@@ -120,9 +120,9 @@ class ProductManager {
       if (!product) {
         return null;
       }
-      return product;
+      return;
     } catch (error) {
-      console.log("Error al eliminar el producto", error);
+      logger.error("Error al eliminar el producto", error);
     }
   }
 }

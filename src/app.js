@@ -10,8 +10,10 @@ const configObject = require("./config/config.js");
 require("./database.js");
 // const session = require("express-session");
 const errorHandle = require("./middleware/error.js");
-const addLogger = require("./utils/logger.js");
-
+const addLogger = require("./middleware/loggerMiddleware.js");
+const logger = require("./utils/logger.js");
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUiExpress = require("swagger-ui-express");
 const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
 const viewsRouter = require("./routes/views.router.js");
@@ -62,7 +64,7 @@ app.use("/api/mockingProducts", mockingProductsRouter);
 app.use("/", viewsRouter);
 
 const httpServer = app.listen(configObject.port, () => {
-  console.log(`Servidor escuchando en http://localhost:${configObject.port}`);
+  logger.info(`Servidor escuchando en http://localhost:${configObject.port}`);
 });
 
 ///Websockets:
@@ -80,3 +82,15 @@ app.get("/loggerTest", (req, res) => {
 
   res.send("Test de logs");
 });
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.1",
+    info: {
+      title: "Documentacion de ecommerce",
+      description: "Proyecto coderhouse backend",
+    },
+  },
+  apis: [path.join(__dirname, "docs/**/*.yaml")],
+};
+const specs = swaggerJSDoc(swaggerOptions);
+app.use("/apidocs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));

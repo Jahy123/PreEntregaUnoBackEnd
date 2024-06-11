@@ -18,5 +18,9 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   userController.admin
 );
+router.get("/requestResetPassword", userController.requestResetPassword);
+router.post("/sendResetPasswordEmail", userController.sendResetPasswordEmail);
+router.get("/resetPassword", userController.resetPassword);
+router.post("/changePassword", userController.changePassword);
 
 module.exports = router;

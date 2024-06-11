@@ -6,7 +6,7 @@ const UserController = require("../controllers/userController.js");
 const userController = new UserController();
 const checkUserRole = require("../middleware/checkrole.js");
 const passport = require("passport");
-const authMiddleware = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authmiddleware");
 
 router.get(
   "/products",
@@ -23,8 +23,10 @@ router.get(
   checkUserRole(["admin"]),
   viewsController.renderRealTimeProducts
 );
+
 router.get("/chat", checkUserRole(["user"]), viewsController.renderChat);
 router.get("/", authMiddleware, viewsController.renderHome);
 router.get("/mockingproducts", viewsController.renderMockingProducts);
+router.get("/renderOwnerProducts/:email", viewsController.renderOwnerProducts);
 
 module.exports = router;

@@ -2,6 +2,7 @@ const socket = require("socket.io");
 const ProductManager = require("../services/db/productService.js");
 const productManager = new ProductManager();
 const MessageModel = require("../services/models/message.model.js");
+const logger = require("../utils/logger.js");
 
 class SocketManager {
   constructor(httpServer) {
@@ -11,7 +12,7 @@ class SocketManager {
 
   async initSocketEvents() {
     this.io.on("connection", async (socket) => {
-      console.log("Un cliente se conectó");
+      logger.info("Un cliente se conectó");
 
       socket.emit("products", await productManager.getProducts());
 

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const configObject = require("./config/config.js");
 const { mongo_url } = configObject;
+const logger = require("./utils/logger.js");
 
 class database {
   static #Instance;
@@ -12,12 +13,12 @@ class database {
 
   static getInstance() {
     if (this.#Instance) {
-      console.log("Conexion previa");
+      logger.info("Conexion previa");
       return this.#Instance;
     }
 
     this.#Instance = new database();
-    console.log("Conexión exitosa");
+    logger.info("Conexión exitosa");
     return this.#Instance;
   }
 }

@@ -1,7 +1,7 @@
 <h1>Mi Perfil</h1>
 
 <div class="profile-card">
-  <p>Bienvenido {{user.nombre}} {{user.apellido}}!</p>
+  <p>Bienvenido {{this.first_name}}.</p>
   <p>Rol: {{user.role}}</p>
 
   <form action="/api/users/logout" method="POST">
@@ -10,8 +10,17 @@
 
   {{#if this.isAdmin}}
     <a class="btn" href="/realtimeproducts">Modificar Productos</a>
+  {{/if}}
+
+  {{#if this.isPremium}}
+    <a class="btn" href="/renderOwnerProducts/{{this.email}}">Agrega o modifica
+      tus Productos</a>
+    <a class="btn" href="/products">Tienda</a>
+    <a class="btn" href="{{this.cart}}">Mi carrito</a>
+
   {{else}}
     <a class="btn" href="/chat">Chat en vivo</a>
     <a class="btn" href="/products">Tienda</a>
+    <a class="btn" href="{{this.cart}}">Mi carrito</a>
   {{/if}}
 </div>

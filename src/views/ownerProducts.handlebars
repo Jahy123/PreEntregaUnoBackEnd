@@ -1,0 +1,45 @@
+<h1>Mis Productos</h1>
+
+{{#each mapProducts}}
+  <div>
+    <p>Titulo: {{title}}</p>
+    <p>Descripción: {{description}}</p>
+    <p>Precio: ${{price}}</p>
+    <p>Código: {{code}}</p>
+    <p>Stock: {{stock}}</p>
+    <p>Categoría: {{category}}</p>
+    <p>{{#if status}}Activo{{else}}Inactivo{{/if}}</p>
+
+    <!-- Enviar el ID del producto al servidor al actualizar o eliminar -->
+    <button class="btn" onclick="deleteProduct('{{id}}')">eliminar</button>
+  </div>
+{{/each}}
+
+<h1>Añadir Productos</h1>
+
+<form action="/api/products" method="POST">
+  <input type="text" id="title" name="title" placeholder="Titulo" required />
+  <input
+    type="text"
+    id="description"
+    name="description"
+    placeholder="Descripcion"
+    required
+  />
+  <input type="number" id="price" name="price" placeholder="Precio" required />
+  <input type="text" id="img" name="img" value="Sin Imagen" />
+  <input type="text" id="code" name="code" placeholder="Código" required />
+  <input type="number" id="stock" name="stock" placeholder="Stock" required />
+  <input
+    type="text"
+    id="category"
+    name="category"
+    placeholder="Categoria"
+    required
+  />
+  <select id="status" name="status">
+    <option value="true">Activo</option>
+    <option value="false">Inactivo</option>
+  </select>
+  <button type="submit">Agregar Producto</button>
+</form>

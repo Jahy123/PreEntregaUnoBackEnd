@@ -6,14 +6,15 @@ const ProductManager = require("../services/db/productService.js");
 const productManager = new ProductManager();
 const { generateUniqueCode, calculateTotal } = require("../utils/cartutils.js");
 const CartModel = require("../services/models/cart.model.js");
+const logger = require("../utils/logger.js");
 
 class CartController {
   async addCart(req, res) {
     try {
       const newCart = await manager.addCart();
-      res.json("CARRITO CREADO");
+      return res.status(200).json("carrito creado");
     } catch (error) {
-      res.json({ error: "Error del servidor", error });
+      res.status(500).json({ error: "Error del servidor" });
     }
   }
   async getCartById(req, res) {
@@ -53,13 +54,13 @@ class CartController {
 
       if (!cartAndProduct) {
         return res
-          .status(404)
+          .status(400)
           .json({ message: "No se pudo agregar el producto al carrito" });
       }
 
       return res.status(200).json({ message: "Producto agregado al carrito" });
     } catch (error) {
-      console.error("Error al agregar el producto al carrito:", error);
+      logger.error("Error al agregar el producto al carrito:", error);
       res.status(500).json({ error: "Error del servidor" });
     }
   }
@@ -81,7 +82,7 @@ class CartController {
 
       if (!cartAndProduct) {
         return res
-          .status(404)
+          .status(400)
           .json({ message: "Producto no existe en el carrito" });
       } else {
         await manager.deleteProductFromCart(cartId, productId);
@@ -152,7 +153,7 @@ class CartController {
 
         if (!cartAndProduct) {
           return res
-            .status(404)
+            .status(400)
             .json({ message: "Producto no existe en el carrito" });
         } else {
           await manager.updateQuantity(cartId, productId, quantity);
@@ -201,12 +202,12 @@ class CartController {
 
       await cart.save();
 
-      res.status(200).json({
-        productsNotAvailable,
-      });
+      res
+        .status(200)
+        .json({ message: "Compra fianlizada", productsNotAvailable });
     } catch (error) {
-      req.logger.error("Error al procesar la compra");
-      res.status(500).json({ error: "Error interno del servidor" });
+      logger.error("Error al procesar la compra");
+      res.status(500).json({ error: "Error interno del servidor", error });
     }
   }
 }
