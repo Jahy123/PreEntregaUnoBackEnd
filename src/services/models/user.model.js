@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
     enum: ["admin", "user", "premium"],
     default: "user",
   },
+  lastLogout: { type: Date },
 });
 
 const UserModel = mongoose.model("user", userSchema);

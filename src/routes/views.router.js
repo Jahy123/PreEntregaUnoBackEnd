@@ -10,7 +10,7 @@ const authMiddleware = require("../middleware/authmiddleware");
 
 router.get(
   "/products",
-  checkUserRole(["user"]),
+  checkUserRole(["user", "premium", "admin"]),
   passport.authenticate("jwt", { session: false }),
   viewsController.renderProducts
 );
@@ -24,9 +24,19 @@ router.get(
   viewsController.renderRealTimeProducts
 );
 
-router.get("/chat", checkUserRole(["user"]), viewsController.renderChat);
+router.get(
+  "/chat",
+  checkUserRole(["user", "admin"]),
+  viewsController.renderChat
+);
 router.get("/", authMiddleware, viewsController.renderHome);
 router.get("/mockingproducts", viewsController.renderMockingProducts);
 router.get("/renderOwnerProducts/:email", viewsController.renderOwnerProducts);
+router.get("/renderCart/:cid", viewsController.renderCart);
+router.get(
+  "/renderAllUsers",
+  checkUserRole(["admin"]),
+  viewsController.renderAllUsers
+);
 
 module.exports = router;

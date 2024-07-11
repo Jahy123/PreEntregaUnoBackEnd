@@ -2,7 +2,17 @@
 
 {{#each products}}
   <div>
-    <p>Producto: {{this.product.title}}</p>
-    <p>Cantidad: {{this.quantity}}</p>
+    <p>Producto: {{title}}</p>
+    <p>Cantidad: {{quantity}}</p>
+    <p>Total: {{totalPrice}}</p>
+    <button class="btn" onclick="deleteProduct('{{../cartId}}', '{{_id}}')">Eliminar</button>
   </div>
 {{/each}}
+
+<h2>Total del carrito: {{totalPurchase}}</h2>
+
+<form action="/api/carts/{{cartId}}/purchase" method="POST">
+  <button type="submit">Finalizar Compra</button>
+</form>
+
+<script src="/js/productsCart.js"></script>

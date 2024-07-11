@@ -7,6 +7,7 @@ const userController = new UserController();
 
 router.post("/register", userController.register);
 router.post("/login", userController.login);
+router.get("/", userController.getUsers);
 router.get(
   "/profile",
   passport.authenticate("jwt", { session: false }),
@@ -22,5 +23,7 @@ router.get("/requestResetPassword", userController.requestResetPassword);
 router.post("/sendResetPasswordEmail", userController.sendResetPasswordEmail);
 router.get("/resetPassword", userController.resetPassword);
 router.post("/changePassword", userController.changePassword);
-
+router.delete("/", userController.deleteInactiveUsers);
+router.delete("/:id", userController.deleteUser);
+router.put("/:id", userController.modifyUserRole);
 module.exports = router;

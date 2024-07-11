@@ -11,6 +11,8 @@ const { EErrors } = require("../services/errors/enums.js");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const logger = require("../utils/logger.js");
+const UserManager = require("../services/db/userService.js");
+const userManager = new UserManager();
 
 class UserController {
   async register(req, res) {
@@ -114,8 +116,25 @@ class UserController {
   }
 
   async logout(req, res) {
-    res.clearCookie(token);
-    res.redirect("/login");
+    try {
+      const userId = req.user._id;
+
+      // Busca al usuario y actualiza lastLogout
+      const user = await UserModel.findById(userId);
+      if (!user) {
+        return res.status(404).send("Usuario no encontrado");
+      }
+
+      user.lastLogout = new Date();
+      await user.save();
+
+      // Elimina la cookie de sesión
+      res.clearCookie(token);
+      res.redirect("/login"); // Redirige a la página de inicio de sesión
+    } catch (error) {
+      logger.error("Error al cerrar sesión:", error);
+      res.status(500).send("Error interno del servidor");
+    }
   }
 
   async admin(req, res) {
@@ -222,6 +241,99 @@ class UserController {
     } catch (error) {
       logger.error("Error al restablecer la contraseña:", error);
       res.status(500).send("Error al restablecer la contraseña");
+    }
+  }
+
+  async getUsers(req, res) {
+    try {
+      const users = await userManager.getUsers();
+
+      res.status(200).send(users);
+    } catch (error) {
+      res.status(500).send(" Error interno del servidor");
+    }
+  }
+  async deleteInactiveUsers(req, res) {
+    // const inactiveThreshold = new Date(Date.now() - 2 * 60 * 1000); // 2 minutos para pruebas
+    const inactiveThreshold = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000); // 2 días para producción
+
+    try {
+      const inactiveUsers = await UserModel.find({
+        lastLogin: { $lt: inactiveThreshold },
+      });
+
+      if (inactiveUsers.length === 0) {
+        return res.status(200).send("No hay usuarios inactivos para eliminar");
+      }
+
+      const transport = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "jahyireantunezsalazar@gmail.com",
+          pass: "wieo tvzp odfr ejrh",
+        },
+      });
+
+      for (const user of inactiveUsers) {
+        await transport.sendMail({
+          from: "Tu App <jahyireantunezsalazar@gmail.com>",
+          to: user.email,
+          subject: "Cuenta eliminada por inactividad",
+          text: `Hola ${user.first_name}, tu cuenta ha sido eliminada debido a la inactividad en los últimos 2 días.`,
+        });
+
+        await UserModel.deleteOne({ _id: user._id });
+      }
+
+      res.status(200).send("Usuarios inactivos eliminados y correos enviados");
+    } catch (error) {
+      logger.error("Error al eliminar usuarios inactivos:", error);
+      res.status(500).send("Error interno del servidor");
+    }
+  }
+  async deleteUser(req, res) {
+    const id = req.params.id;
+    try {
+      let response = await userManager.deleteUser(id);
+
+      return res
+        .status(200)
+        .json({ status: "success", message: "Usuario eliminado" });
+    } catch (error) {
+      res.status(500).send("Error al eliminar el producto");
+    }
+  }
+
+  async modifyUserRole(req, res) {
+    const userId = req.params.id;
+    const { role } = req.body;
+
+    try {
+      const user = await UserModel.findByIdAndUpdate(
+        userId,
+        { role: role },
+        { new: true }
+      );
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ status: "error", error: "Usuario no encontrado" });
+      }
+
+      logger.info("Rol del usuario actualizado con éxito");
+      res
+        .status(200)
+        .json({
+          status: "success",
+          message: "Rol de usuario actualizado",
+          user: user,
+        });
+    } catch (error) {
+      logger.error("Error al actualizar el rol del usuario", error);
+      res
+        .status(500)
+        .json({ status: "error", error: "Error interno del servidor" });
     }
   }
 }

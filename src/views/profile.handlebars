@@ -1,26 +1,30 @@
 <h1>Mi Perfil</h1>
 
 <div class="profile-card">
-  <p>Bienvenido {{this.first_name}}.</p>
+  <p>Bienvenido {{first_name}}.</p>
   <p>Rol: {{user.role}}</p>
 
   <form action="/api/users/logout" method="POST">
     <button class="btn" type="submit">Logout</button>
   </form>
 
-  {{#if this.isAdmin}}
+  {{#if isAdmin}}
     <a class="btn" href="/realtimeproducts">Modificar Productos</a>
-  {{/if}}
-
-  {{#if this.isPremium}}
-    <a class="btn" href="/renderOwnerProducts/{{this.email}}">Agrega o modifica
-      tus Productos</a>
-    <a class="btn" href="/products">Tienda</a>
-    <a class="btn" href="{{this.cart}}">Mi carrito</a>
-
-  {{else}}
+    <a class="btn" href="/renderAllUsers">Modificar Usuarios</a>
     <a class="btn" href="/chat">Chat en vivo</a>
     <a class="btn" href="/products">Tienda</a>
-    <a class="btn" href="{{this.cart}}">Mi carrito</a>
+  {{/if}}
+
+  {{#if isPremium}}
+    <a class="btn" href="/renderOwnerProducts/{{email}}">Agrega o modifica tus
+      Productos</a>
+    <a class="btn" href="/products">Tienda</a>
+    <a class="btn" href="/renderCart/{{cart}}">Mi carrito</a>
+  {{else}}
+    {{#unless isAdmin}}
+      <a class="btn" href="/renderCart{{cart}}">Mi carrito</a>
+      <a class="btn" href="/chat">Chat en vivo</a>
+      <a class="btn" href="/products">Tienda</a>
+    {{/unless}}
   {{/if}}
 </div>

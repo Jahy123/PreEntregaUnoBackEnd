@@ -148,6 +148,7 @@ class ProductController {
         .status(200)
         .json({ message: "Producto eliminado exitosamente" });
     } catch (error) {
+      logger.error("Error al eliminar el producto:", error);
       return res
         .status(500)
         .json({ message: "Error del servidor", error: error.message });

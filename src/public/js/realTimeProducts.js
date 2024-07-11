@@ -1,21 +1,21 @@
 const socket = io();
-const logger = require("../utils/logger.js");
 
-socket.on("products", (product) => {
-  renderProducts(product);
+socket.on("products", (productData) => {
+  console.log("Productos recibidos: ", productData); // Verifica que los datos se reciban
+  renderProducts(productData);
 });
 
-//Función para renderizar nuestros productos:
-const renderProducts = (product) => {
+// Función para renderizar nuestros productos:
+const renderProducts = (productData) => {
   const containerProducts = document.getElementById("contenedorProductos");
   containerProducts.innerHTML = "";
 
-  if (product && product.docs) {
-    product.docs.forEach((item) => {
+  if (productData && productData.docs && productData.docs.length > 0) {
+    productData.docs.forEach((item) => {
       const card = document.createElement("div");
       card.classList.add("card");
 
-      card.innerHTML = ` 
+      card.innerHTML = `
         <p>${item.title}</p>
         <p>${item.price}</p>
         <button class="btnDelete">Eliminar</button>
@@ -24,18 +24,19 @@ const renderProducts = (product) => {
 
       containerProducts.appendChild(card);
 
-      // Agregamos el evento al botón de eliminar:
+      // Agregar el evento al botón de eliminar:
       card.querySelector(".btnDelete").addEventListener("click", () => {
         deleteProduct(item._id);
       });
 
-      // Agregamos el evento al botón de actualizar:
+      // Agregar el evento al botón de actualizar:
       card.querySelector(".btnUpdate").addEventListener("click", () => {
         renderUpdateForm(item._id, item.title);
       });
     });
   } else {
-    logger.error("No se encontraron productos en los datos recibidos.");
+    console.error("No se encontraron productos en los datos recibidos.");
+    containerProducts.innerHTML = "<p>No se encontraron productos.</p>";
   }
 };
 
@@ -45,7 +46,7 @@ const renderUpdateForm = (productId, productName) => {
   div.classList.add("containerUpdateProduct");
 
   // Agregar el contenido HTML al div
-  div.innerHTML = ` 
+  div.innerHTML = `
     <h2>Actualizar Producto: ${productName}</h2>
     <form id="updateForm">
       <input type="text" id="titleUpdate" placeholder="Titulo" />
@@ -103,16 +104,13 @@ const renderUpdateForm = (productId, productName) => {
 const deleteProduct = (id) => {
   socket.emit("deleteProduct", id);
 };
+
 const updateProduct = (id, productUpdate) => {
-  logger.info(
-    "Botón de actualización clickeado para el producto con ID:",
-    id,
-    productUpdate
-  );
+  console.log("Actualizando producto con ID:", id, productUpdate);
   socket.emit("updateProduct", id, productUpdate);
 };
 
-//Agregamos productos del formulario:
+// Agregar productos del formulario:
 
 document.getElementById("btnEnviar").addEventListener("click", () => {
   addProduct();

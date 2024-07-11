@@ -14,8 +14,13 @@ class SocketManager {
     this.io.on("connection", async (socket) => {
       logger.info("Un cliente se conectó");
 
-      socket.emit("products", await productManager.getProducts());
-
+      try {
+        const products = await productManager.getProducts();
+        logger.info("Productos enviados al cliente: ", products);
+        socket.emit("products", products);
+      } catch (error) {
+        logger.error("Error al obtener productos: ", error);
+      }
       socket.on("deleteProduct", async (id) => {
         await productManager.deleteProduct(id);
         this.emitUpdatedProducts(socket);

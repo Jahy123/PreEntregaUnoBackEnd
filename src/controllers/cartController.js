@@ -204,7 +204,7 @@ class CartController {
 
       res
         .status(200)
-        .json({ message: "Compra fianlizada", productsNotAvailable });
+        .json({ message: "Compra fianlizada", productsNotAvailable, ticket });
     } catch (error) {
       logger.error("Error al procesar la compra");
       res.status(500).json({ error: "Error interno del servidor", error });

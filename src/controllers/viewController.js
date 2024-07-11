@@ -6,6 +6,7 @@ const productManager = new ProductManager();
 const cartManager = new CartManager();
 const authMiddleware = require("../middleware/authmiddleware");
 const logger = require("../utils/logger.js");
+const mongoose = require("mongoose");
 
 class ViewsController {
   async renderProducts(req, res) {
@@ -52,7 +53,7 @@ class ViewsController {
   async renderCart(req, res) {
     const cartId = req.params.cid;
     try {
-      const cart = await cartManager.getProductById(cartId);
+      const cart = await cartManager.getCartById(cartId);
 
       if (!cart) {
         logger.warning("No existe ese carrito con el id");
@@ -62,14 +63,19 @@ class ViewsController {
       let totalPurchase = 0;
 
       const productsInCart = cart.products.map((item) => {
-        const product = item.product.toObject();
+        const product =
+          item.product instanceof mongoose.Document
+            ? item.product.toObject()
+            : item.product;
+        console.log(product);
         const quantity = item.quantity;
         const totalPrice = product.price * quantity;
 
         totalPurchase += totalPrice;
 
         return {
-          product: { ...product, totalPrice },
+          ...product, // Extiende las propiedades del producto
+          totalPrice,
           quantity,
           cartId,
         };
@@ -151,13 +157,27 @@ class ViewsController {
         JSON.parse(JSON.stringify(product))
       );
 
-      logger.debug(mapProducts);
+      logger.info(mapProducts);
 
       // Renderizar la vista y pasar los productos
       res.render("ownerProducts", { mapProducts });
     } catch (error) {
       logger.error("Error al obtener los productos del dueño:", error);
       res.status(500).send("Error al obtener los productos del dueño");
+    }
+  }
+  async renderAllUsers(req, res) {
+    try {
+      const users = await UserModel.find({});
+      const mapUsers = users.map((user) => JSON.parse(JSON.stringify(user)));
+
+      logger.debug(mapUsers);
+
+      // Renderizar la vista y pasar los usuarios
+      res.render("users", { mapUsers });
+    } catch (error) {
+      logger.error("Error al obtener los usuarios", error);
+      res.status(500).send("Error al obtener los usuarios");
     }
   }
 }

@@ -1,4 +1,6 @@
+const UserModel = require("../models/user.model.js");
 const ProductModel = require("../models/product.model.js");
+const nodemailer = require("nodemailer");
 const logger = require("../../utils/logger.js");
 class ProductManager {
   async addProduct({
@@ -119,6 +121,30 @@ class ProductManager {
 
       if (!product) {
         return null;
+      }
+      // Verificar si el propietario es un usuario premium
+      const owner = await UserModel.findOne({ email: product.owner });
+      if (owner && owner.role === "premium") {
+        // Configurar el transportador de nodemailer
+        const transport = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: "jahyireantunezsalazar@gmail.com", // tu correo
+            pass: "wieo tvzp odfr ejrh", // tu contraseña
+          },
+        });
+
+        // Enviar el correo electrónico al propietario
+        await transport.sendMail({
+          from: "Tu App <jahyireantunezsalazar@gmail.com>",
+          to: owner.email,
+          subject: "Producto Eliminado",
+          text: `Hola ${owner.first_name}, tu producto "${product.title}" ha sido eliminado.`,
+        });
+
+        logger.info(
+          `Correo enviado a ${owner.email} informando sobre la eliminación del producto.`
+        );
       }
       return;
     } catch (error) {

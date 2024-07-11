@@ -14,7 +14,7 @@ class CartManager {
 
   async getCartById(id) {
     try {
-      const carrito = await CartModel.findById(id);
+      const carrito = await CartModel.findById(id).populate("products.product");
       if (!carrito) {
         logger.warning("No existe ese carrito con el id");
         return null;

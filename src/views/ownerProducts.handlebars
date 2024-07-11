@@ -11,7 +11,7 @@
     <p>{{#if status}}Activo{{else}}Inactivo{{/if}}</p>
 
     <!-- Enviar el ID del producto al servidor al actualizar o eliminar -->
-    <button class="btn" onclick="deleteProduct('{{id}}')">eliminar</button>
+    <button class="btn" onclick="deleteProduct('{{_id}}')">Eliminar</button>
   </div>
 {{/each}}
 
@@ -43,3 +43,5 @@
   </select>
   <button type="submit">Agregar Producto</button>
 </form>
+
+<script src="/js/products.js"></script>

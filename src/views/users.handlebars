@@ -1,0 +1,24 @@
+<h1>Usuarios</h1>
+
+{{#each mapUsers}}
+  <div>
+    <p>Nombre: {{first_name}}</p>
+    <p>Apellido: {{last_name}}</p>
+    <p>Email: {{email}}</p>
+    <p>Edad: {{age}}</p>
+    <p>Carrito: {{cart}}</p>
+    <p>Rol: {{role}}</p>
+    <button class="btn" onclick="deleteUser('{{_id}}')">Eliminar</button>
+  </div>
+  <h4>Modificar usuario</h4>
+  <form onsubmit="modifyUserRole(event, '{{_id}}')">
+    <select id="role-{{_id}}" name="role" data-role="{{role}}">
+      <option value="admin">Admin</option>
+      <option value="premium">Premium</option>
+      <option value="user">User</option>
+    </select>
+    <button type="submit">Modificar</button>
+  </form>
+{{/each}}
+
+<script src="js/users.js"></script>
