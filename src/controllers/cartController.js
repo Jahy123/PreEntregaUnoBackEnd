@@ -171,27 +171,55 @@ class CartController {
     const cartId = req.params.cid;
     try {
       const cart = await manager.getCartById(cartId);
-      const products = cart.products;
+      if (!cart) {
+        logger.error(`Carrito con ID ${cartId} no encontrado`);
+        return res.status(404).json({ error: "Carrito no encontrado" });
+      }
 
+      const products = cart.products;
       const productsNotAvailable = [];
 
       for (const item of products) {
         const productId = item.product;
         const product = await productManager.getProductById(productId);
+
+        if (!product) {
+          logger.warning(`Producto con ID ${productId} no encontrado`);
+          productsNotAvailable.push(productId);
+          continue;
+        }
+
         if (product.stock >= item.quantity) {
           product.stock -= item.quantity;
           await product.save();
         } else {
+          logger.warning(
+            `Producto con ID ${productId} no tiene suficiente stock`
+          );
           productsNotAvailable.push(productId);
         }
       }
 
       const userWithCart = await UserModel.findOne({ cart: cartId });
+      if (!userWithCart) {
+        logger.error(`Usuario con carrito ID ${cartId} no encontrado`);
+        return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      const filteredProducts = cart.products.filter(
+        (item) => item.product && item.product.price
+      );
+      if (filteredProducts.length === 0) {
+        logger.warning("No hay productos válidos para calcular el total");
+        return res
+          .status(400)
+          .json({ error: "No hay productos válidos en el carrito" });
+      }
 
       const ticket = new TicketModel({
         code: generateUniqueCode(),
         purchase_datetime: new Date(),
-        amount: calculateTotal(cart.products),
+        amount: calculateTotal(filteredProducts),
         purchaser: userWithCart._id,
       });
       await ticket.save();
@@ -204,9 +232,9 @@ class CartController {
 
       res
         .status(200)
-        .json({ message: "Compra fianlizada", productsNotAvailable, ticket });
+        .json({ message: "Compra finalizada", productsNotAvailable, ticket });
     } catch (error) {
-      logger.error("Error al procesar la compra");
+      logger.error("Error al procesar la compra", error);
       res.status(500).json({ error: "Error interno del servidor", error });
     }
   }

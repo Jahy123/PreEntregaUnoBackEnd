@@ -10,7 +10,7 @@ class UserService {
       const users = await UserModel.find({}, "first_name email rol role");
       return users;
     } catch (error) {
-      console.error("Error al obtener los usuarios:", error);
+      logger.error("Error al obtener los usuarios:", error);
       throw error;
     }
   }

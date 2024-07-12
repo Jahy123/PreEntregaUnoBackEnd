@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const exphbs = require("express-handlebars");
+
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const initializePassport = require("./config/passport.config.js");
@@ -8,7 +9,6 @@ const cors = require("cors");
 const path = require("path");
 const configObject = require("./config/config.js");
 require("./database.js");
-// const session = require("express-session");
 const errorHandle = require("./middleware/error.js");
 const addLogger = require("./middleware/loggerMiddleware.js");
 const logger = require("./utils/logger.js");
@@ -33,19 +33,6 @@ app.use(addLogger);
 app.use(passport.initialize());
 initializePassport();
 app.use(cookieParser());
-
-// session
-// app.use(
-//   session({
-//     secret: configObject.secret_session,
-//     resave: true,
-//     saveUninitialized: true,
-//     store: MongoStore.create({
-//       mongoUrl: configObject.mongo_url,
-//     }),
-//   })
-// );
-// app.use(passport.session());
 
 //AuthMiddleware
 const authMiddleware = require("./middleware/authmiddleware.js");

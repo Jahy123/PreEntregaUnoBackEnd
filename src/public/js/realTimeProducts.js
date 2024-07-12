@@ -1,7 +1,7 @@
 const socket = io();
+// const console = require("../utils/logger.js");
 
 socket.on("products", (productData) => {
-  console.log("Productos recibidos: ", productData); // Verifica que los datos se reciban
   renderProducts(productData);
 });
 
@@ -35,7 +35,6 @@ const renderProducts = (productData) => {
       });
     });
   } else {
-    console.error("No se encontraron productos en los datos recibidos.");
     containerProducts.innerHTML = "<p>No se encontraron productos.</p>";
   }
 };
@@ -106,7 +105,6 @@ const deleteProduct = (id) => {
 };
 
 const updateProduct = (id, productUpdate) => {
-  console.log("Actualizando producto con ID:", id, productUpdate);
   socket.emit("updateProduct", id, productUpdate);
 };
 

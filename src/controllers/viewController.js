@@ -11,6 +11,7 @@ const mongoose = require("mongoose");
 class ViewsController {
   async renderProducts(req, res) {
     try {
+      const user = req.user;
       const { page = 1, limit = 3 } = req.query;
 
       const skip = (page - 1) * limit;
@@ -25,8 +26,13 @@ class ViewsController {
       const hasNextPage = page < totalPages;
 
       const newArray = products.map((product) => {
-        const { _id, ...rest } = product.toObject();
-        return { id: _id, ...rest };
+        const { _id, owner, ...rest } = product.toObject();
+        return {
+          id: _id,
+          owner,
+          ...rest,
+          showAddToCartButton: user.role !== "admin" && user.email !== owner, // No mostrar botón si es admin o dueño del producto
+        };
       });
 
       const cartId = req.user.cart.toString();
@@ -40,6 +46,9 @@ class ViewsController {
         currentPage: parseInt(page),
         totalPages,
         cartId,
+        isAdmin: user.role === "admin",
+        isPremium: user.role === "premium",
+        userEmail: user.email,
       });
     } catch (error) {
       logger.error("Error al obtener productos", error);
@@ -62,24 +71,34 @@ class ViewsController {
 
       let totalPurchase = 0;
 
-      const productsInCart = cart.products.map((item) => {
-        const product =
-          item.product instanceof mongoose.Document
-            ? item.product.toObject()
-            : item.product;
-        console.log(product);
-        const quantity = item.quantity;
-        const totalPrice = product.price * quantity;
+      const productsInCart = cart.products
+        .map((item) => {
+          const product =
+            item.product instanceof mongoose.Document
+              ? item.product.toObject()
+              : item.product;
 
-        totalPurchase += totalPrice;
+          if (!product) {
+            // Manejar el caso donde el producto es null
+            logger.warning(
+              `Producto no encontrado para el item en el carrito con id ${item._id}`
+            );
+            return null; // Ignorar este producto
+          }
 
-        return {
-          ...product, // Extiende las propiedades del producto
-          totalPrice,
-          quantity,
-          cartId,
-        };
-      });
+          const quantity = item.quantity;
+          const totalPrice = product.price * quantity;
+
+          totalPurchase += totalPrice;
+
+          return {
+            ...product, // Extiende las propiedades del producto
+            totalPrice,
+            quantity,
+            cartId,
+          };
+        })
+        .filter((item) => item !== null); // Filtrar productos nulos
 
       res.render("carts", {
         products: productsInCart,

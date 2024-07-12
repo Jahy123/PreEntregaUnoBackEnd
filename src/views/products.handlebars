@@ -5,15 +5,16 @@
 </form>
 
 {{#each products}}
-
   <div>
     <h2>{{title}}</h2>
     <p>{{description}}</p>
     <p>Precio: ${{price}}</p>
     <p>Categoría: {{category}}</p>
-    <form action="/api/carts/{{../cartId}}/product/{{id}}" method="POST">
-                    <button class="btn" type="submit">Agregar al Carrito</button>
-                </form>
+    {{#if showAddToCartButton}}
+      <form action="/api/carts/{{../cartId}}/product/{{id}}" method="POST">
+        <button class="btn" type="submit">Agregar al Carrito</button>
+      </form>
+    {{/if}}
   </div>
 {{/each}}
 

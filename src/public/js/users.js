@@ -1,3 +1,4 @@
+const logger = require("../utils/logger.js");
 function deleteUser(_id) {
   fetch(`/api/users/${_id}`, { method: "DELETE" })
     .then((response) => {
@@ -7,7 +8,7 @@ function deleteUser(_id) {
       location.reload();
     })
     .catch((error) => {
-      console.error("Error:", error);
+      logger.error("Error:", error);
     });
 }
 
@@ -29,6 +30,6 @@ function modifyUserRole(event, _id) {
       location.reload();
     })
     .catch((error) => {
-      console.error("Error:", error);
+      logger.error("Error:", error);
     });
 }
