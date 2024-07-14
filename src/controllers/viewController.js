@@ -129,7 +129,7 @@ class ViewsController {
 
   async renderRealTimeProducts(req, res) {
     try {
-      res.render("realtimeproducts");
+      res.render("realTimeProducts");
     } catch (error) {
       logger.error("error en la vista real time", error);
       res.status(500).json({ error: "Error interno del servidor" });
