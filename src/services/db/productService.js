@@ -80,7 +80,7 @@ class ProductManager {
           : null,
       };
     } catch (error) {
-      throw new Error("Error");
+      logger.error("Error al traer productos", error);
     }
   }
 

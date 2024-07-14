@@ -18,7 +18,7 @@ class ProductController {
 
       res.status(200).send(products);
     } catch (error) {
-      res.status(500).send(" Error interno del servidor");
+      res.status(500).send(" Error interno del servidor", error);
     }
   }
 
