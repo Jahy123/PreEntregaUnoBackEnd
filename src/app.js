@@ -41,7 +41,7 @@ app.use(authMiddleware);
 //Handlebars
 app.engine("handlebars", exphbs.engine());
 app.set("view engine", "handlebars");
-app.set("views", "./src/views");
+app.set("views", path.join(__dirname, "views"));
 
 //Rutas:
 app.use("/api/products", productsRouter);
